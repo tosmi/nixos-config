@@ -36,8 +36,6 @@
     #   echo "Hello, ${config.home.username}!"
     # '')
     pkgs.passwdqc
-    #pkgs.kitty
-    #pkgs.kitty-themes
     pkgs.jetbrains.idea-ultimate
     pkgs.jetbrains-mono
     pkgs.pass
@@ -61,6 +59,7 @@
     pkgs.jdk
     pkgs.quarkus
     pkgs.go
+    pkgs.tektoncd-cli
   ];
 
   fonts.fontconfig.enable = true;
