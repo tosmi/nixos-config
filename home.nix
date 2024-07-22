@@ -1,5 +1,7 @@
 { config, pkgs, ... }:
-
+let
+  unstable = import <nixos-unstable> {};
+in
 {
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
@@ -36,7 +38,6 @@
     #   echo "Hello, ${config.home.username}!"
     # '')
     pkgs.passwdqc
-    pkgs.jetbrains.idea-ultimate
     pkgs.jetbrains-mono
     pkgs.pass
     pkgs.git
@@ -44,7 +45,6 @@
     pkgs.jq
     pkgs.starship
     pkgs.pinentry-gnome3
-    pkgs.direnv
     pkgs.slack
     pkgs.skopeo
     pkgs.podman
@@ -57,9 +57,13 @@
     pkgs.mu
     pkgs.isync
     pkgs.jdk
-    pkgs.quarkus
     pkgs.go
     pkgs.tektoncd-cli
+    pkgs.vlc
+
+    unstable.quarkus
+    unstable.jetbrains.idea-ultimate
+    unstable.k9s
   ];
 
   fonts.fontconfig.enable = true;
@@ -104,6 +108,17 @@
 
   programs.browserpass.enable = true;
   programs.browserpass.browsers = [ "firefox" ];
+
+  programs.direnv = {
+    enable = true;
+    nix-direnv.enable = true;
+  };
+
+  # programs.bash =  {
+  #   enable = true;
+  # };
+
+
   dconf = {
     enable = true;
     settings = {
@@ -140,6 +155,10 @@
 
         screensaver = ["<Shift><Super>l" ];
       };
+
+      "org/gnome/shell".enabled-extensions = [
+          "just-perfection-desktop@just-perfection"
+        ];
     };
   };
 
