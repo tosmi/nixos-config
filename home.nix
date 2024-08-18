@@ -1,6 +1,73 @@
 { config, pkgs, ... }:
 let
-  unstable = import <nixos-unstable> {};
+  standardPackages = [
+    # # Adds the 'hello' command to your environment. It prints a friendly
+    # # "Hello, world!" when run.
+    # pkgs.hello
+
+    # # It is sometimes useful to fine-tune packages, for example, by applying
+    # # overrides. You can do that directly here, just don't forget the
+    # # parentheses. Maybe you want to install Nerd Fonts with a limited number of
+    # # fonts?
+    # (pkgs.nerdfonts.override { fonts = [ "FantasqueSansMono" ]; })
+
+    # # You can also create simple shell scripts directly inside your
+    # # configuration. For example, this adds a command 'my-hello' to your
+    # # environment:
+    # (pkgs.writeShellScriptBin "my-hello" ''
+    #   echo "Hello, ${config.home.username}!"
+    # '')
+
+    (pkgs.aspellWithDicts
+          (dicts: with dicts; [ de en en-computers en-science es fr la ]))
+
+    # required to install vms with lab_utilities
+    pkgs.virt-manager
+    pkgs.guestfs-tools
+    pkgs.libguestfs
+
+    # render markdown
+    pkgs.pandoc
+
+    # other packages
+    pkgs.passwdqc
+    pkgs.jetbrains-mono
+    pkgs.pass
+    pkgs.git
+    pkgs.otpclient
+    pkgs.jq
+    pkgs.starship
+    pkgs.slack
+    pkgs.skopeo
+    pkgs.podman
+    pkgs.kubectl
+    pkgs.openshift
+    pkgs.crc
+    pkgs.mu
+    pkgs.isync
+    pkgs.jdk
+    pkgs.go
+    pkgs.tektoncd-cli
+    pkgs.vlc
+    pkgs.signal-desktop
+    pkgs.stern
+    pkgs.nodejs_22
+    pkgs.zeal
+    pkgs.seahorse
+
+    #unstable.quarkus
+    #unstable.k9s
+  ];
+
+  nixosPackages = [
+    pkgs.pinentry-gnome3
+    pkgs.gnome.gnome-tweaks
+    pkgs.gnome.gnome-boxes
+    pkgs.gnomeExtensions.just-perfection
+  ];
+
+  silverbluePackages = [];
+
 in
 {
   # Home Manager needs a bit of information about you and the paths it should
@@ -20,51 +87,12 @@ in
   nixpkgs.config.allowUnfree = true;
   # The home.packages option allows you to install Nix packages into your
   # environment.
-  home.packages = [
-    # # Adds the 'hello' command to your environment. It prints a friendly
-    # # "Hello, world!" when run.
-    # pkgs.hello
 
-    # # It is sometimes useful to fine-tune packages, for example, by applying
-    # # overrides. You can do that directly here, just don't forget the
-    # # parentheses. Maybe you want to install Nerd Fonts with a limited number of
-    # # fonts?
-    # (pkgs.nerdfonts.override { fonts = [ "FantasqueSansMono" ]; })
-
-    # # You can also create simple shell scripts directly inside your
-    # # configuration. For example, this adds a command 'my-hello' to your
-    # # environment:
-    # (pkgs.writeShellScriptBin "my-hello" ''
-    #   echo "Hello, ${config.home.username}!"
-    # '')
-    pkgs.passwdqc
-    pkgs.jetbrains-mono
-    pkgs.pass
-    pkgs.git
-    pkgs.otpclient
-    pkgs.jq
-    pkgs.starship
-    pkgs.pinentry-gnome3
-    pkgs.slack
-    pkgs.skopeo
-    pkgs.podman
-    pkgs.kubectl
-    pkgs.openshift
-    pkgs.crc
-    pkgs.gnome.gnome-tweaks
-    pkgs.gnome.gnome-boxes
-    pkgs.gnomeExtensions.just-perfection
-    pkgs.mu
-    pkgs.isync
-    pkgs.jdk
-    pkgs.go
-    pkgs.tektoncd-cli
-    pkgs.vlc
-
-    unstable.quarkus
-    unstable.jetbrains.idea-ultimate
-    unstable.k9s
-  ];
+  home.packages =  if builtins.pathExists /sysroot/ostree
+                   then
+                     standardPackages ++ silverbluePackages
+                   else
+                     standardPackages ++ nixosPackages;
 
   fonts.fontconfig.enable = true;
 
@@ -174,6 +202,7 @@ in
   };
 
   programs.kitty = {
+    # on non-nixos system this requires kitty to be installed outside of nixpkgs
     enable = true;
     theme = "Modus Operandi Tinted";
     font.name = "JetBrains Mono";
