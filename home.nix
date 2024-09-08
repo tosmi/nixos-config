@@ -19,7 +19,7 @@ let
     # '')
 
     (pkgs.aspellWithDicts
-          (dicts: with dicts; [ de en en-computers en-science es fr la ]))
+          (dicts: with dicts; [ de en en-computers en-science ]))
 
     # required to install vms with lab_utilities
     pkgs.virt-manager
