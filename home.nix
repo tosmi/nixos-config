@@ -19,7 +19,7 @@ let
     # '')
 
     (pkgs.aspellWithDicts
-          (dicts: with dicts; [ de en en-computers en-science ]))
+          (dicts: with dicts; [ de en en-computers en-science es fr la ]))
 
     # required to install vms with lab_utilities
     pkgs.virt-manager
@@ -30,6 +30,8 @@ let
     pkgs.pandoc
 
     # other packages
+    pkgs.ripgrep
+    pkgs.kubecolor
     pkgs.passwdqc
     pkgs.jetbrains-mono
     pkgs.pass
@@ -199,6 +201,12 @@ in
       pkgs.mu
       mu4e
     ];
+  };
+
+  services.emacs = {
+    enable = true;
+    defaultEditor = true;
+    socketActivation.enable = false;
   };
 
   programs.kitty = {
