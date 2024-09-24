@@ -12,6 +12,8 @@
       ./disk-config.nix
     ];
 
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
   # Bootloader.
   boot.loader.grub.enable = true;
   boot.loader.grub.efiSupport = true;
@@ -60,8 +62,39 @@
     variant = "";
   };
 
+
+  services.udev.extraRules = ''
+# Rules for Oryx web flashing and live training
+KERNEL=="hidraw*", ATTRS{idVendor}=="16c0", MODE="0664", GROUP="wheel"
+KERNEL=="hidraw*", ATTRS{idVendor}=="3297", MODE="0664", GROUP="wheel"
+
+# Legacy rules for live training over webusb (Not needed for firmware v21+)
+# Rule for all ZSA keyboards
+SUBSYSTEM=="usb", ATTR{idVendor}=="3297", GROUP="wheel"
+ # Rule for the Moonlander
+SUBSYSTEM=="usb", ATTR{idVendor}=="3297", ATTR{idProduct}=="1969", GROUP="wheel"
+# Rule for the Ergodox EZ
+SUBSYSTEM=="usb", ATTR{idVendor}=="feed", ATTR{idProduct}=="1307", GROUP="wheel"
+# Rule for the Planck EZ
+SUBSYSTEM=="usb", ATTR{idVendor}=="feed", ATTR{idProduct}=="6060", GROUP="wheel"
+
+# Wally Flashing rules for the Ergodox EZ
+ATTRS{idVendor}=="16c0", ATTRS{idProduct}=="04[789B]?", ENV{ID_MM_DEVICE_IGNORE}="1"
+ATTRS{idVendor}=="16c0", ATTRS{idProduct}=="04[789A]?", ENV{MTP_NO_PROBE}="1"
+SUBSYSTEMS=="usb", ATTRS{idVendor}=="16c0", ATTRS{idProduct}=="04[789ABCD]?", MODE:="0666"
+KERNEL=="ttyACM*", ATTRS{idVendor}=="16c0", ATTRS{idProduct}=="04[789B]?", MODE:="0666"
+
+# Keymapp / Wally Flashing rules for the Moonlander and Planck EZ
+SUBSYSTEMS=="usb", ATTRS{idVendor}=="0483", ATTRS{idProduct}=="df11", MODE:="0666", SYMLINK+="stm32_dfu"
+# Keymapp Flashing rules for the Voyager
+SUBSYSTEMS=="usb", ATTRS{idVendor}=="3297", MODE:="0666", SYMLINK+="ignition_dfu"
+'';
+
   # Enable CUPS to print documents.
   services.printing.enable = true;
+
+  # zsa keyboard support
+  hardware.keyboard.zsa.enable = true;
 
   # Enable sound with pipewire.
   hardware.pulseaudio.enable = false;
@@ -86,7 +119,7 @@
   users.users.pinhead = {
     isNormalUser = true;
     description = "Toni Schmidbauer";
-    extraGroups = [ "networkmanager" "wheel" "libvirtd" ];
+    extraGroups = [ "networkmanager" "wheel" "libvirtd" "lp"];
     packages = with pkgs; [
     #  thunderbird
     ];
@@ -139,7 +172,6 @@
 
   programs.virt-manager.enable = true;
 
-
   virtualisation = {
     libvirtd = {
        enable = true;
@@ -170,4 +202,128 @@
   };
 
   services.fwupd.enable = true;
+
+  services.avahi.enable = true;
+  services.avahi.nssmdns4 = true;
+  services.avahi.openFirewall = true;
+
+  # required for jetbrains tools
+  # https://wiki.nixos.org/wiki/Jetbrains_Tools
+  programs.nix-ld.enable = true;
+  programs.nix-ld.libraries = with pkgs; [
+     SDL
+     SDL2
+     SDL2_image
+     SDL2_mixer
+     SDL2_ttf
+     SDL_image
+     SDL_mixer
+     SDL_ttf
+     alsa-lib
+     at-spi2-atk
+     at-spi2-core
+     atk
+     bzip2
+     cairo
+     cups
+     curlWithGnuTls
+     dbus
+     dbus-glib
+     desktop-file-utils
+     e2fsprogs
+     expat
+     flac
+     fontconfig
+     freeglut
+     freetype
+     fribidi
+     fuse
+     fuse3
+     gdk-pixbuf
+     glew110
+     glib
+     gmp
+     gst_all_1.gst-plugins-base
+     gst_all_1.gst-plugins-ugly
+     gst_all_1.gstreamer
+     gtk2
+     harfbuzz
+     icu
+     keyutils.lib
+     libGL
+     libGLU
+     libappindicator-gtk2
+     libcaca
+     libcanberra
+     libcap
+     libclang.lib
+     libdbusmenu
+     libdrm
+     libgcrypt
+     libgpg-error
+     libidn
+     libjack2
+     libjpeg
+     libmikmod
+     libogg
+     libpng12
+     libpulseaudio
+     librsvg
+     libsamplerate
+     libsecret
+     libthai
+     libtheora
+     libtiff
+     libudev0-shim
+     libusb1
+     libuuid
+     libvdpau
+     libvorbis
+     libvpx
+     libxcrypt-legacy
+     libxkbcommon
+     libxml2
+     mesa
+     nspr
+     nss
+     openssl
+     p11-kit
+     pango
+     pixman
+     python3
+     speex
+     stdenv.cc.cc
+     tbb
+     udev
+     vulkan-loader
+     wayland
+     xorg.libICE
+     xorg.libSM
+     xorg.libX11
+     xorg.libXScrnSaver
+     xorg.libXcomposite
+     xorg.libXcursor
+     xorg.libXdamage
+     xorg.libXext
+     xorg.libXfixes
+     xorg.libXft
+     xorg.libXi
+     xorg.libXinerama
+     xorg.libXmu
+     xorg.libXrandr
+     xorg.libXrender
+     xorg.libXt
+     xorg.libXtst
+     xorg.libXxf86vm
+     xorg.libpciaccess
+     xorg.libxcb
+     xorg.xcbutil
+     xorg.xcbutilimage
+     xorg.xcbutilkeysyms
+     xorg.xcbutilrenderutil
+     xorg.xcbutilwm
+     xorg.xkeyboardconfig
+     xz
+     zlib
+   ];
 }
