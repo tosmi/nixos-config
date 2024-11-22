@@ -300,7 +300,7 @@ in
     aliases = {
       ci = "commit -a";
       st = "status";
-	    plog = "log --pretty --color --dirstat --summary --stat";
+      plog = "log --pretty --color --dirstat --summary --stat";
       diffstat = "diff --stat";
       ds = "diff --stat";
       lol = "log --graph --decorate --pretty=oneline --abbrev-commit";
@@ -317,7 +317,7 @@ in
       cleanup = "!git branch --merged master | grep -v 'master$' | xargs git branch -d";
       g = "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative";
       h = "!git --no-pager log origin/master..HEAD --abbrev-commit --pretty=oneline";
-	    root = "rev-parse --show-toplevel";
+      root = "rev-parse --show-toplevel";
     };
   };
 
