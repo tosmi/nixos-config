@@ -37,19 +37,18 @@ let
     pkgs.bfg-repo-cleaner
     pkgs.ripgrep
     pkgs.kubecolor
+    pkgs.kepubify
     pkgs.passwdqc
     pkgs.jetbrains-mono
     pkgs.pass
     pkgs.git
     pkgs.otpclient
     pkgs.jq
-    pkgs.starship
     pkgs.slack
     pkgs.skopeo
     pkgs.podman
     pkgs.kubectl
     pkgs.openshift
-    pkgs.crc
     pkgs.mu
     pkgs.isync
     pkgs.jdk
@@ -244,6 +243,76 @@ in
     font.name = "JetBrains Mono";
   };
 
+  programs.starship = {
+    enable = true;
+    settings = {
+      format = lib.concatStrings [
+        "$username"
+        "$hostname"
+        "$kubernetes"
+        "$conda"
+        "$line_break"
+        "$os"
+        "$container"
+        "$directory"
+        "$git_branch"
+        "$git_status"
+        "$character"
+      ];
+
+      username.disabled = false;
+
+      kubernetes = {
+        disabled = false;
+        format = "[⛵ $user on $context \\[$namespace\\]](dimmed green) ";
+      };
+
+      kubernetes.contexts = [
+        {
+          user_pattern = "system:admin/.*";
+          user_alias   = "admin";
+        }
+        {
+          user_pattern = "kube:admin/.*";
+          user_alias   = "kube:admin";
+        }
+        {
+          user_pattern = "root/.*";
+          user_alias   = "root";
+        }
+        {
+          context_pattern = "dev.local.cluster.k8s";
+          context_alias   = "dev";
+        }
+        {
+          context_pattern = ".*hub.*aws-tntinfra.*";
+          context_alias   = "aws-hub";
+          user_pattern = "root/.*";
+          user_alias   = "root";
+        }
+        {
+          context_pattern = ".*ocp.*aws-tntinfra.*";
+          context_alias   = "aws-ocp";
+        }
+        {
+          context_pattern = ".*/openshift-cluster/.*";
+          context_alias   = "openshift";
+        }
+        {
+          context_pattern = "gke_.*_(?P<var_cluster>[\w-]+)";
+          context_alias   = "gke-$var_cluster";
+        }
+      ];
+
+      character = {
+        success_symbol = "[➜](bold green) ";
+        error_symbol = "[✗](bold red) ";
+      };
+
+      aws.disabled = true;
+    };
+  };
+
   programs.git = {
     enable = true;
 
@@ -333,24 +402,20 @@ in
     };
   };
 
-  home.file  = {
-    "test" = {
-      text = ''
-      test
-      '';
-    };
+  # home.file  = {
+  #   "test" = {
+  #     text = ''
+  #     test
+  #     '';
+  #   };
 
-    ".private".source = fetchGit {
-      url = "ssh://git@gitlab.lan.stderr.at:2222/tosmi/private.git";
-      ref = "master";
-      # rev = "1d79552e3976d798561f9c8d6fcbcd2f66dc08a4";
-    };
+  #   ".private".source = fetchGit {
+  #     url = "ssh://git@gitlab.lan.stderr.at:2222/tosmi/private.git";
+  #     ref = "master";
+  #     # rev = "1d79552e3976d798561f9c8d6fcbcd2f66dc08a4";
+  #   };
 
-    ".ssh".source = config.lib.file.mkOutOfStoreSymlink ~/.private/.ssh;
-  };
-
-
-
-
+  #   ".ssh".source = config.lib.file.mkOutOfStoreSymlink ~/.private/.ssh;
+  # };
 
 }
