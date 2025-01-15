@@ -36,7 +36,7 @@ let
     # other packages
     pkgs.bfg-repo-cleaner
     pkgs.ripgrep
-    pkgs.kubecolor
+    pkgs.k9s
     pkgs.kepubify
     pkgs.passwdqc
     pkgs.jetbrains-mono
@@ -159,6 +159,8 @@ in
     nix-direnv.enable = true;
   };
 
+  programs.kubecolor.enable = true;
+
   # programs.bash =  {
   #   enable = true;
   # };
@@ -202,7 +204,12 @@ in
       };
 
       "org/gnome/shell".enabled-extensions = [
-          "just-perfection-desktop@just-perfection"
+        "just-perfection-desktop@just-perfection"
+        "freon@UshakovVasilii_Github.yahoo.com"
+        "caffeine@patapon.info"
+        "tailscale-status@maxgallup.github.com"
+        "switcher@landau.fi"
+        "GPaste@gnome-shell-extensions.gnome.org"
         ];
     };
   };
