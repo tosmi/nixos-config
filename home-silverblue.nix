@@ -210,7 +210,8 @@ in
         "tailscale-status@maxgallup.github.com"
         "switcher@landau.fi"
         "GPaste@gnome-shell-extensions.gnome.org"
-        ];
+        "quake-terminal@diegodario88.github.io"
+        "paperwm@paperwm.github.com" ];
     };
   };
 
