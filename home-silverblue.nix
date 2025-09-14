@@ -169,10 +169,10 @@ in
   programs.browserpass.enable = true;
   programs.browserpass.browsers = [ "firefox" "chrome" "chromium" ];
 
-  programs.direnv = {
-    enable = true;
-    nix-direnv.enable = true;
-  };
+  # programs.direnv = {
+  #   enable = true;
+  #   nix-direnv.enable = true;
+  # };
 
   programs.kubecolor.enable = true;
 
@@ -180,23 +180,35 @@ in
     enable = true;
     enableCompletion = true;
 
+    bashrcExtra = "source -- \"$(blesh-share)\"/ble.sh --attach=none";
     initExtra = ''
+    # if [[ "$INSIDE_EMACS" = 'vterm' ]] \
+    #     && [[ -n "$EMACS_VTERM_PATH" ]] \
+    #     && [[ -f "$EMACS_VTERM_PATH/etc/emacs-vterm-bash.sh" ]]; then
+    # 	source "$EMACS_VTERM_PATH/etc/emacs-vterm-bash.sh"
 
-    if [[ "$INSIDE_EMACS" = 'vterm' ]] \
-        && [[ -n "$EMACS_VTERM_PATH" ]] \
-        && [[ -f "$EMACS_VTERM_PATH/etc/emacs-vterm-bash.sh" ]]; then
-    	source "$EMACS_VTERM_PATH/etc/emacs-vterm-bash.sh"
+    #   # command -v starship # && starship_precmd_user_func="vterm_prompt_end"
+    # fi
 
-      command -v starship && starship_precmd_user_func="vterm_prompt_end"
-    fi
+    function vterm_printf(){
+      if [ -n "$TMUX" ] && ([ "''${TERM%%-*}" = "tmux" ] || [ "''${TERM%%-*}" = "screen" ] ); then
+        # Tell tmux to pass the escape sequences through
+        printf "\ePtmux;\e\e]%s\007\e\\" "$1"
+      elif [ "''${TERM%%-*}" = "screen" ]; then
+        # GNU screen (screen, screen-256color, screen-256color-bce)
+    	  printf "\eP\e]%s\007\e\\" "$1"
+      else
+        printf "\e]%s\e\\" "$1"
+      fi
+    }
+
+    vterm_prompt_end() {
+      vterm_printf "51;A$(whoami)@$(hostname):$(pwd)"
+    }
 
     PATH=$PATH:~/bin:~/.local/bin
 
-    # extra options
-    # if command -v tmux &> /dev/null && [ -n "$PS1" ] && [[ ! "$TERM" =~ screen ]] && [[ ! "$TERM" =~ tmux ]] && [ -z "$TMUX" ] && [ -z "$INSIDE_EMACS" ] &&  [ ! -v "__INTELLIJ_COMMAND_HISTFILE__" ] && [[ ! "$TERMINAL_EMULATOR" =~ "JetBrains-JediTerm" ]]; then
-    #  exec tmux
-    # fi
-
+    [[ ! ''${BLE_VERSION-} ]] || ble-attach
     '';
 
     shellAliases = {
