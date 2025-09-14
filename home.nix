@@ -1,5 +1,11 @@
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
+
+with builtins;
+with lib;
+
 let
+  unstable = import <nixos-unstable> {};
+
   standardPackages = [
     # # Adds the 'hello' command to your environment. It prints a friendly
     # # "Hello, world!" when run.
@@ -30,15 +36,18 @@ let
     pkgs.pandoc
 
     # other packages
+    pkgs.linux-manual
+    pkgs.google-chrome
+    pkgs.keymapp
     pkgs.ripgrep
-    pkgs.kubecolor
+    pkgs.file
+    pkgs.unzip
     pkgs.passwdqc
     pkgs.jetbrains-mono
     pkgs.pass
     pkgs.git
     pkgs.otpclient
     pkgs.jq
-    pkgs.starship
     pkgs.slack
     pkgs.skopeo
     pkgs.podman
@@ -51,25 +60,23 @@ let
     pkgs.go
     pkgs.tektoncd-cli
     pkgs.vlc
-    pkgs.signal-desktop
-    pkgs.stern
-    pkgs.nodejs_22
-    pkgs.zeal
-    pkgs.seahorse
 
-    #unstable.quarkus
-    #unstable.k9s
+    # unstable.quarkus
+
+    # installed via toolbox, see configuration.nix for nix-ld settings
+    # unstable.jetbrains.idea-ultimate
+    unstable.k9s
   ];
 
   nixosPackages = [
     pkgs.pinentry-gnome3
-    pkgs.gnome.gnome-tweaks
-    pkgs.gnome.gnome-boxes
+    pkgs.jetbrains-toolbox
     pkgs.gnomeExtensions.just-perfection
+    pkgs.gnome-tweaks
+    pkgs.gnome-boxes
   ];
 
   silverbluePackages = [];
-
 in
 {
   # Home Manager needs a bit of information about you and the paths it should
@@ -84,12 +91,11 @@ in
   # You should not change this value, even if you update Home Manager. If you do
   # want to update the value, then make sure to first check the Home Manager
   # release notes.
-  home.stateVersion = "24.05"; # Please read the comment before changing.
+  home.stateVersion = "24.11"; # Please read the comment before changing.
 
   nixpkgs.config.allowUnfree = true;
   # The home.packages option allows you to install Nix packages into your
   # environment.
-
   home.packages =  if builtins.pathExists /sysroot/ostree
                    then
                      standardPackages ++ silverbluePackages
@@ -136,8 +142,12 @@ in
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
 
+  programs.kubecolor.enable = true;
+
+  programs.ghostty.enable = true;
+
   programs.browserpass.enable = true;
-  programs.browserpass.browsers = [ "firefox" ];
+  programs.browserpass.browsers = [ "firefox" "chrome" ];
 
   programs.direnv = {
     enable = true;
@@ -187,13 +197,38 @@ in
       };
 
       "org/gnome/shell".enabled-extensions = [
-          "just-perfection-desktop@just-perfection"
-        ];
+                "just-perfection-desktop@just-perfection"
+        "freon@UshakovVasilii_Github.yahoo.com"
+        "caffeine@patapon.info"
+        "tailscale-status@maxgallup.github.com"
+        "switcher@landau.fi"
+        "GPaste@gnome-shell-extensions.gnome.org"
+        "quake-terminal@diegodario88.github.io" ];
     };
   };
 
+  programs.gpg.enable = true;
+
+  services.gpg-agent= {
+    enable = true;
+    pinentryPackage = pkgs.pinentry-gnome3;
+  };
+
+  services.gnome-keyring.enable = true;
+
+  # we use gnome-keyring
+  services.ssh-agent.enable = false;
+
+  home.sessionVariables = {
+    SSH_AUTH_SOCK = "/run/user/1000/keyring/ssh";
+  };
+
+  systemd.user.sessionVariables = {
+    SSH_AUTH_SOCK = "/run/user/1000/keyring/ssh";
+  };
+
   programs.emacs = {
-    package = pkgs.emacs29-pgtk;
+    package = pkgs.emacs30-pgtk;
     enable = true;
     extraPackages = epkgs: with epkgs; [
       vterm
@@ -212,8 +247,162 @@ in
   programs.kitty = {
     # on non-nixos system this requires kitty to be installed outside of nixpkgs
     enable = true;
-    theme = "Modus Operandi Tinted";
+
+    package = if builtins.pathExists /sysroot/ostree
+              then
+                config.lib.nixGL.wrap pkgs.kitty
+              else
+                pkgs.kitty;
+
+    themeFile = "Modus_Operandi_Tinted";
     font.name = "JetBrains Mono";
+  };
+
+  programs.starship = {
+    enable = true;
+    settings = {
+      format = lib.concatStrings [
+        "$username"
+        "$hostname"
+        "$kubernetes"
+        "$conda"
+        "$line_break"
+        "$os"
+        "$container"
+        "$directory"
+        "$git_branch"
+        "$git_status"
+        "$character"
+      ];
+
+      username.disabled = false;
+
+      kubernetes = {
+        disabled = false;
+        format = "[⛵ $user on $context \\[$namespace\\]](dimmed green) ";
+      };
+
+      kubernetes.contexts = [
+        {
+          user_pattern = "system:admin/.*";
+          user_alias   = "admin";
+        }
+        {
+          user_pattern = "kube:admin/.*";
+          user_alias   = "kube:admin";
+        }
+        {
+          user_pattern = "root/.*";
+          user_alias   = "root";
+        }
+        {
+          context_pattern = "dev.local.cluster.k8s";
+          context_alias   = "dev";
+        }
+        {
+          context_pattern = ".*hub.*aws-tntinfra.*";
+          context_alias   = "aws-hub";
+          user_pattern = "root/.*";
+          user_alias   = "root";
+        }
+        {
+          context_pattern = ".*ocp.*aws-tntinfra.*";
+          context_alias   = "aws-ocp";
+        }
+        {
+          context_pattern = ".*/openshift-cluster/.*";
+          context_alias   = "openshift";
+        }
+        {
+          context_pattern = "gke_.*_(?P<var_cluster>[\w-]+)";
+          context_alias   = "gke-$var_cluster";
+        }
+      ];
+
+      character = {
+        success_symbol = "[➜](bold green) ";
+        error_symbol = "[✗](bold red) ";
+      };
+
+      aws.disabled = true;
+    };
+  };
+
+  programs.git = {
+    enable = true;
+
+    userEmail = "toni@stderr.at";
+    userName = "Toni Schmidbauer";
+
+    signing = {
+      signByDefault = true;
+      key = "8C6444B3";
+    };
+
+    extraConfig = {
+      commit = {
+        gpgSign = true;
+      };
+
+      apply = {
+        whitespace = "warn";
+      };
+
+      diff = {
+        rename = "copy";
+        renamelimit = "600";
+      };
+
+      pager = {
+        color = true;
+      };
+
+      color = {
+        branch = "auto";
+        diff = "auto";
+        interactive = "auto";
+        status = "auto";
+      };
+
+      push = {
+	      default = "current";
+      };
+
+      pull = {
+	      rebase = false;
+      };
+
+      init = {
+	      defaultBranch = "main";
+      };
+
+      github = {
+	      user = "tosmi";
+      };
+    };
+
+    aliases = {
+      ci = "commit -a";
+      st = "status";
+      plog = "log --pretty --color --dirstat --summary --stat";
+      diffstat = "diff --stat";
+      ds = "diff --stat";
+      lol = "log --graph --decorate --pretty=oneline --abbrev-commit";
+      lola = "log --graph --decorate --pretty=oneline --abbrev-commit --all";
+      pu = "pull";
+      pur = "pull --rebase";
+      cam = "commit -am";
+      ca = "commit -a";
+      cm = "commit -m";
+      co = "checkout";
+      br = "branch -v";
+      unstage = "reset HEAD --";
+      find = "!sh -c 'git ls-tree -r --name-only HEAD | grep --color $1' -";
+      cleanup = "!git branch --merged master | grep -v 'master$' | xargs git branch -d";
+      g = "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative";
+      h = "!git --no-pager log origin/master..HEAD --abbrev-commit --pretty=oneline";
+      root = "rev-parse --show-toplevel";
+    };
   };
 
   home.activation = {
