@@ -23,7 +23,10 @@ let
     # '')
 
     (pkgs.aspellWithDicts
-          (dicts: with dicts; [ de en en-computers en-science es fr la ]))
+      (dicts: with dicts; [ de en en-computers en-science es fr la ]))
+
+    # devconf
+    pkgs.kind
 
     # required to install vms with lab_utilities
     pkgs.virt-manager
@@ -34,9 +37,10 @@ let
     pkgs.pandoc
 
     # other packages
+    pkgs.blesh
     pkgs.bfg-repo-cleaner
     pkgs.ripgrep
-    pkgs.k9s
+
     pkgs.kepubify
     pkgs.passwdqc
     pkgs.jetbrains-mono
@@ -44,33 +48,44 @@ let
     pkgs.git
     pkgs.otpclient
     pkgs.jq
-    pkgs.slack
+
+    # flatpack
+    # pkgs.slack
+
     pkgs.skopeo
     pkgs.podman
-    pkgs.kubectl
-    pkgs.openshift
     pkgs.mu
     pkgs.isync
-    pkgs.jdk
-    pkgs.go
     pkgs.vlc
     pkgs.signal-desktop
-    pkgs.stern
     pkgs.nodejs_22
     pkgs.zeal
     pkgs.seahorse
-    pkgs.google-chrome
 
     # install globally because i use it all the time
-    pkgs.godef
+    pkgs.istioctl
+    pkgs.kubectl
+    pkgs.kubectl-neat
+    pkgs.kustomize
+    pkgs.kubernetes-helm
+    pkgs.k9s
+    pkgs.stern
+    pkgs.operator-sdk
+
+    pkgs.openshift
     pkgs.tektoncd-cli
 
-    # also global because of intellij ansilbe-lint plugin
     pkgs.ansible
     pkgs.ansible-lint
 
-    #unstable.quarkus
-    #unstable.k9s
+    pkgs.jdk
+    pkgs.quarkus
+    pkgs.babashka
+
+    pkgs.godef
+    pkgs.go
+
+    pkgs.postgresql
   ];
 
   nixosPackages = [
@@ -161,10 +176,85 @@ in
 
   programs.kubecolor.enable = true;
 
-  # programs.bash =  {
-  #   enable = true;
-  # };
+  programs.bash =  {
+    enable = true;
+    enableCompletion = true;
 
+    initExtra = ''
+
+    if [[ "$INSIDE_EMACS" = 'vterm' ]] \
+        && [[ -n "$EMACS_VTERM_PATH" ]] \
+        && [[ -f "$EMACS_VTERM_PATH/etc/emacs-vterm-bash.sh" ]]; then
+    	source "$EMACS_VTERM_PATH/etc/emacs-vterm-bash.sh"
+
+      command -v starship && starship_precmd_user_func="vterm_prompt_end"
+    fi
+
+    PATH=$PATH:~/bin:~/.local/bin
+
+    # extra options
+    # if command -v tmux &> /dev/null && [ -n "$PS1" ] && [[ ! "$TERM" =~ screen ]] && [[ ! "$TERM" =~ tmux ]] && [ -z "$TMUX" ] && [ -z "$INSIDE_EMACS" ] &&  [ ! -v "__INTELLIJ_COMMAND_HISTFILE__" ] && [[ ! "$TERMINAL_EMULATOR" =~ "JetBrains-JediTerm" ]]; then
+    #  exec tmux
+    # fi
+
+    '';
+
+    shellAliases = {
+      j="jobs -l";
+
+      z="suspend";
+      x="exit";
+      pd="pushd";
+      pd2="pushd +2";
+      pd3="pushd +3";
+      pd4="pushd +4";
+
+      ls="ls --hyperlink=auto -NF --color";
+      ll="ls --hyperlink=auto -l";
+      li="ls --hyperlink=auto -li";
+      la="ls --hyperlink=auto -la";
+      lt="ls --hyperlink=auto -tral";
+
+      dirs="dirs -v";
+
+      egrep="egrep --color=tty -d skip";
+      fgrep="fgrep --color=tty -d skip";
+      grep="grep --color=tty -d skip";
+      t="TERM=xterm-256color tmux";
+      ta="TERM=xterm-256color tmux attach -t";
+      e="emacs -nw";
+
+      gpu="git pull";
+      gps="git push";
+
+      psh="ps -fu pinssh";
+      kpsh="sudo pkill -u pinssh";
+
+      E="SUDO_EDITOR=\"emacsclient -c -a emacs\" sudoedit";
+
+      psu="ps -fu pinhead";
+      psukill="sudo -u pinhead /usr/bin/pkill -U pinhead sshd";
+
+      k="kubectl";
+
+      m="emacsclient -n -e \\(magit-status\\)";
+      p="podman";
+      h="flatpak-spawn --host";
+      hvirsh="flatpak-spawn --host virsh -c qemu:///system";
+
+      ocphome="oc login -u root https://api.ocp.lan.stderr.at:6443";
+      ocphetzner="oc login -u root https://api.hetzner.tntinfra.net:6443";
+      ocpaws="oc login -u root https://api.hub.aws.tntinfra.net:6443";
+
+      uvirsh="virsh -c qemu:///session";
+      svirsh="virsh -c qemu:///system";
+
+      gnome-backup="dconf dump / > $${HOME}/etc/gnome_settings-$(hostname).backup";
+      gnome-restore="dconf load -f / < $${HOME}/etc/gnome_settings-$(hostname).backup";
+
+      oc="env KUBECTL_COMMAND=oc kubecolor";
+    };
+  };
 
   dconf = {
     enable = true;
@@ -207,16 +297,13 @@ in
         "just-perfection-desktop@just-perfection"
         "freon@UshakovVasilii_Github.yahoo.com"
         "caffeine@patapon.info"
-        "tailscale-status@maxgallup.github.com"
-        "switcher@landau.fi"
+        "tailscale-status@maxgallup.github.com" "switcher@landau.fi"
         "GPaste@gnome-shell-extensions.gnome.org"
         "quake-terminal@diegodario88.github.io"
-        "paperwm@paperwm.github.com" ];
-    };
-  };
+        "paperwm@paperwm.github.com" ]; }; };
 
   programs.emacs = {
-    package = pkgs.emacs29-pgtk;
+    package = pkgs.emacs30-pgtk;
     enable = true;
     extraPackages = epkgs: with epkgs; [
       vterm
@@ -237,22 +324,15 @@ in
     enable = true;
   };
 
-  programs.kitty = {
-    # on non-nixos system this requires kitty to be installed outside of nixpkgs
+  services.home-manager.autoExpire = {
     enable = true;
-
-    package = if builtins.pathExists /sysroot/ostree
-              then
-                config.lib.nixGL.wrap pkgs.kitty
-              else
-                pkgs.kitty;
-
-    themeFile = "Modus_Operandi_Tinted";
-    font.name = "JetBrains Mono";
+    store.cleanup = true;
+    store.options = "--delete-older-than 30d";
   };
 
   programs.starship = {
     enable = true;
+    enableBashIntegration = true;
     settings = {
       format = lib.concatStrings [
         "$username"
@@ -396,6 +476,34 @@ in
       h = "!git --no-pager log origin/master..HEAD --abbrev-commit --pretty=oneline";
       root = "rev-parse --show-toplevel";
     };
+  };
+
+  programs.atuin = {
+    enable = true;
+    enableBashIntegration = true;
+    flags = [ "--disable-up-arrow" ];
+  };
+
+  programs.tmux = {
+	  enable = true;
+
+	  clock24 = true;
+	  plugins = with pkgs.tmuxPlugins; [
+		  sensible
+		  yank
+		  {
+			  plugin = dracula;
+			  extraConfig = ''
+        				set -g @dracula-show-battery false
+         				set -g @dracula-show-powerline true
+         				set -g @dracula-refresh-rate 10
+                '';
+		  }
+	  ];
+
+	  extraConfig = ''
+    		set -g mouse on
+       '';
   };
 
   home.activation = {
