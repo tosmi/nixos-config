@@ -60,7 +60,6 @@ let
     pkgs.mu
     pkgs.isync
     pkgs.vlc
-    pkgs.signal-desktop-bin
     pkgs.nodejs_22
     pkgs.zeal
     pkgs.seahorse
