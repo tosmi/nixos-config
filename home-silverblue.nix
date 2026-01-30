@@ -29,9 +29,11 @@ let
     pkgs.kind
 
     # required to install vms with lab_utilities
-    pkgs.virt-manager
-    pkgs.guestfs-tools
-    pkgs.libguestfs
+    # moved to os packages
+    #
+    #pkgs.virt-manager
+    #pkgs.guestfs-tools
+    #pkgs.libguestfs
 
     # render markdown
     pkgs.pandoc
@@ -48,6 +50,7 @@ let
     pkgs.git
     pkgs.otpclient
     pkgs.jq
+    pkgs.scrcpy
 
     # flatpack
     # pkgs.slack
@@ -57,7 +60,6 @@ let
     pkgs.mu
     pkgs.isync
     pkgs.vlc
-    pkgs.signal-desktop
     pkgs.nodejs_22
     pkgs.zeal
     pkgs.seahorse
@@ -99,8 +101,9 @@ let
 
 in
 {
-  nixGL.packages = import <nixgl> { inherit pkgs; };
-  nixGL.defaultWrapper = "mesa";
+  targets.genericLinux.nixGL.packages = import <nixgl> { inherit pkgs; };
+
+  targets.genericLinux.nixGL.defaultWrapper = "mesa";
 
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
@@ -169,10 +172,10 @@ in
   programs.browserpass.enable = true;
   programs.browserpass.browsers = [ "firefox" "chrome" "chromium" ];
 
-  # programs.direnv = {
-  #   enable = true;
-  #   nix-direnv.enable = true;
-  # };
+  programs.direnv = {
+    enable = true;
+    nix-direnv.enable = true;
+  };
 
   programs.kubecolor.enable = true;
 
@@ -189,6 +192,12 @@ in
 
     #   # command -v starship # && starship_precmd_user_func="vterm_prompt_end"
     # fi
+
+    if [[ "$INSIDE_EMACS" = 'vterm' ]] \
+        && [[ -n "$SSH_AUTH_SOCKET" ]] \
+        && [[ -f "/run/user/1000/keyring/ssh" ]]; then
+      export SSH_AUTH_SOCK=/run/user/1000/keyring/ssh
+    fi
 
     function vterm_printf(){
       if [ -n "$TMUX" ] && ([ "''${TERM%%-*}" = "tmux" ] || [ "''${TERM%%-*}" = "screen" ] ); then
@@ -257,6 +266,7 @@ in
       ocphome="oc login -u root https://api.ocp.lan.stderr.at:6443";
       ocphetzner="oc login -u root https://api.hetzner.tntinfra.net:6443";
       ocpaws="oc login -u root https://api.hub.aws.tntinfra.net:6443";
+      ocpmanaged="oc login -u kubeadmin https://api.managed.aws.tntinfra.net:6443";
 
       uvirsh="virsh -c qemu:///session";
       svirsh="virsh -c qemu:///system";
@@ -315,7 +325,7 @@ in
         "paperwm@paperwm.github.com" ]; }; };
 
   programs.emacs = {
-    package = pkgs.emacs30-pgtk;
+    package = pkgs.emacs-pgtk;
     enable = true;
     extraPackages = epkgs: with epkgs; [
       vterm
@@ -327,8 +337,9 @@ in
 
   services.emacs = {
     enable = true;
+    client.enable = true;
     defaultEditor = true;
-    socketActivation.enable = true;
+    # socketActivation.enable = true;
     startWithUserSession = "graphical";
   };
 
@@ -416,15 +427,17 @@ in
   programs.git = {
     enable = true;
 
-    userEmail = "toni@stderr.at";
-    userName = "Toni Schmidbauer";
-
     signing = {
       signByDefault = true;
       key = "8C6444B3";
     };
 
-    extraConfig = {
+    settings = {
+      user = {
+        email = "toni@stderr.at";
+        name = "Toni Schmidbauer";
+      };
+
       commit = {
         gpgSign = true;
       };
@@ -464,29 +477,29 @@ in
       github = {
 	      user = "tosmi";
       };
-    };
 
-    aliases = {
-      ci = "commit -a";
-      st = "status";
-      plog = "log --pretty --color --dirstat --summary --stat";
-      diffstat = "diff --stat";
-      ds = "diff --stat";
-      lol = "log --graph --decorate --pretty=oneline --abbrev-commit";
-      lola = "log --graph --decorate --pretty=oneline --abbrev-commit --all";
-      pu = "pull";
-      pur = "pull --rebase";
-      cam = "commit -am";
-      ca = "commit -a";
-      cm = "commit -m";
-      co = "checkout";
-      br = "branch -v";
-      unstage = "reset HEAD --";
-      find = "!sh -c 'git ls-tree -r --name-only HEAD | grep --color $1' -";
-      cleanup = "!git branch --merged master | grep -v 'master$' | xargs git branch -d";
-      g = "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative";
-      h = "!git --no-pager log origin/master..HEAD --abbrev-commit --pretty=oneline";
-      root = "rev-parse --show-toplevel";
+      aliases = {
+        ci = "commit -a";
+        st = "status";
+        plog = "log --pretty --color --dirstat --summary --stat";
+        diffstat = "diff --stat";
+        ds = "diff --stat";
+        lol = "log --graph --decorate --pretty=oneline --abbrev-commit";
+        lola = "log --graph --decorate --pretty=oneline --abbrev-commit --all";
+        pu = "pull";
+        pur = "pull --rebase";
+        cam = "commit -am";
+        ca = "commit -a";
+        cm = "commit -m";
+        co = "checkout";
+        br = "branch -v";
+        unstage = "reset HEAD --";
+        find = "!sh -c 'git ls-tree -r --name-only HEAD | grep --color $1' -";
+        cleanup = "!git branch --merged master | grep -v 'master$' | xargs git branch -d";
+        g = "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative";
+        h = "!git --no-pager log origin/master..HEAD --abbrev-commit --pretty=oneline";
+        root = "rev-parse --show-toplevel";
+      };
     };
   };
 
@@ -495,6 +508,11 @@ in
     enableBashIntegration = true;
     flags = [ "--disable-up-arrow" ];
   };
+
+  # programs.ghostty = {
+  #   enable = true;
+  #   enableBashIntegration = true;
+  # };
 
   programs.tmux = {
 	  enable = true;
