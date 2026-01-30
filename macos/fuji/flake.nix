@@ -121,6 +121,7 @@
              brews = [
                "trash"
                "gemini-cli"
+               "passwdqc"
              ];
 
              casks = [
@@ -128,10 +129,11 @@
                "firefox"
                "citrix-workspace"
                "slack"
-               "intellij-idea"
+               "jetbrains-toolbox"
                "pycharm"
                "goland"
                "cursor"
+               "cursor-cli"
                "microsoft-teams"
                "stats"
                "rectangle"
@@ -141,6 +143,8 @@
                "balenaetcher"
                "tailscale-app"
                "synology-drive"
+               "miro"
+               "signal"
              ];
            };
          })
@@ -169,7 +173,7 @@
                      pkgs.mu
                      pkgs.ansible
                      pkgs.ansible-navigator
-                     pkgs.passwdqc
+                     pkgs.gnused
 
                      (pkgs.aspellWithDicts
                        (dicts: with dicts; [ de en en-computers ]))
