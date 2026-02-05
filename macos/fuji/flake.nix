@@ -145,6 +145,8 @@
                "synology-drive"
                "miro"
                "signal"
+               "utm"
+               "visual-studio-code"
              ];
            };
          })
@@ -174,6 +176,7 @@
                      pkgs.ansible
                      pkgs.ansible-navigator
                      pkgs.gnused
+                     pkgs.git-filter-repo
 
                      (pkgs.aspellWithDicts
                        (dicts: with dicts; [ de en en-computers ]))
