@@ -130,8 +130,6 @@
                "citrix-workspace"
                "slack"
                "jetbrains-toolbox"
-               "pycharm"
-               "goland"
                "cursor"
                "cursor-cli"
                "microsoft-teams"
