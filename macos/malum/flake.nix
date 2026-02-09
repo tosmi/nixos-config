@@ -172,6 +172,7 @@
                      pkgs.kubevirt
                      pkgs.ansible
                      pkgs.ansible-lint
+                     pkgs.uv
 
                      (pkgs.aspellWithDicts
                        (dicts: with dicts; [ de en en-computers ]))
