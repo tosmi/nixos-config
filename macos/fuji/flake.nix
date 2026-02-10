@@ -146,6 +146,7 @@
                "miro"
                "signal"
                "utm"
+               "podman-desktop"
                "visual-studio-code"
              ];
            };
