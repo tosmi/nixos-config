@@ -126,18 +126,21 @@
                "firefox"
                "citrix-workspace"
                "slack"
-               "intellij-idea"
-               "pycharm"
-               "goland"
+               "jetbrains-toolbox"
                "cursor"
+               "cursor-cli"
                "microsoft-teams"
                "stats"
                "rectangle"
-               "hyperkey"
-               "charmstone"
                "vlc"
                "windows-app"
                "karabiner-elements"
+               "balenaetcher"
+               "synology-drive"
+               "miro"
+               "signal"
+               "utm"
+               "visual-studio-code"
              ];
            };
          })
@@ -162,11 +165,16 @@
                      pkgs.go
                      pkgs.gnupg
                      pkgs.kubectl
+                     pkgs.kubectl-neat
                      pkgs.blesh
                      pkgs.mu
                      pkgs.ansible
                      pkgs.ansible-navigator
                      pkgs.passwdqc
+                     pkgs.kubevirt
+                     pkgs.ansible
+                     pkgs.ansible-lint
+                     pkgs.uv
 
                      (pkgs.aspellWithDicts
                        (dicts: with dicts; [ de en en-computers ]))
@@ -219,6 +227,8 @@
                        vterm_prompt_end() {
                          vterm_printf "51;A$(whoami)@$(hostname):$(pwd)"
                        }
+
+                       EDITOR=emacsclient
 
                        export KUBECOLOR_PRESET="light"
                        PATH=$HOME/bin:$HOME/.local/bin:$PATH
