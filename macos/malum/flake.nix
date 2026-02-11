@@ -199,6 +199,8 @@
                      enableCompletion = true;
 
                      bashrcExtra = ''
+                       HISTCONTROL=ignorespace
+
                        export PATH=$HOME/.local/bin:/opt/homebrew/bin:/opt/podman/bin:$PATH
                        source -- "$(blesh-share)"/ble.sh --attach=none
                      '';
