@@ -122,6 +122,7 @@
                "trash"
                "gemini-cli"
                "passwdqc"
+               "opa"
              ];
 
              casks = [
@@ -146,6 +147,7 @@
                "utm"
                "podman-desktop"
                "visual-studio-code"
+               "drawio"
              ];
            };
          })
@@ -176,6 +178,9 @@
                      pkgs.ansible-navigator
                      pkgs.gnused
                      pkgs.git-filter-repo
+                     pkgs.ffmpeg
+                     # server and client, we use just the client part
+                     pkgs.garage_2
 
                      (pkgs.aspellWithDicts
                        (dicts: with dicts; [ de en en-computers ]))
@@ -499,7 +504,7 @@
                        # font-family = "MesloLGS Nerd Font Mono";
                        font-family = "JetBrains Mono";
                        font-size = 18;
-                       background-opacity = 0.9;
+                       background-opacity = 0.95;
                        theme = "Argonaut";
                        keybind = [
 
