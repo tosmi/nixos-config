@@ -12,7 +12,7 @@
  };
 
  outputs = inputs: {
-   darwinConfigurations.malum =
+   darwinConfigurations.fuji =
      inputs.darwin.lib.darwinSystem {
        system = "aarch64-darwin";
        pkgs = import inputs.nixpkgs {
@@ -24,11 +24,13 @@
          # space separates list items in nix
          ({ pkgs, ... }: {
 
-           networking.hostName = "malum";
+           networking.hostName = "fuji";
 
            nix.extraOptions = ''
            experimental-features = flakes
            '';
+
+           nix.enable = false;
 
            services.openssh.enable = true;
 
@@ -119,6 +121,8 @@
              brews = [
                "trash"
                "gemini-cli"
+               "passwdqc"
+               "opa"
              ];
 
              casks = [
@@ -126,18 +130,24 @@
                "firefox"
                "citrix-workspace"
                "slack"
-               "intellij-idea"
-               "pycharm"
-               "goland"
+               "jetbrains-toolbox"
                "cursor"
+               "cursor-cli"
                "microsoft-teams"
                "stats"
                "rectangle"
-               "hyperkey"
-               "charmstone"
                "vlc"
                "windows-app"
                "karabiner-elements"
+               "balenaetcher"
+               "tailscale-app"
+               "synology-drive"
+               "miro"
+               "signal"
+               "utm"
+               "podman-desktop"
+               "visual-studio-code"
+               "drawio"
              ];
            };
          })
@@ -166,7 +176,11 @@
                      pkgs.mu
                      pkgs.ansible
                      pkgs.ansible-navigator
-                     pkgs.passwdqc
+                     pkgs.gnused
+                     pkgs.git-filter-repo
+                     pkgs.ffmpeg
+                     # server and client, we use just the client part
+                     pkgs.garage_2
 
                      (pkgs.aspellWithDicts
                        (dicts: with dicts; [ de en en-computers ]))
@@ -490,7 +504,7 @@
                        # font-family = "MesloLGS Nerd Font Mono";
                        font-family = "JetBrains Mono";
                        font-size = 18;
-                       background-opacity = 0.9;
+                       background-opacity = 0.95;
                        theme = "Argonaut";
                        keybind = [
 
