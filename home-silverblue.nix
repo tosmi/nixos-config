@@ -183,6 +183,8 @@ in
     enable = true;
     enableCompletion = true;
 
+    historyControl = [ "ignoreboth" ];
+
     bashrcExtra = "source -- \"$(blesh-share)\"/ble.sh --attach=none";
     initExtra = ''
     # if [[ "$INSIDE_EMACS" = 'vterm' ]] \
@@ -533,6 +535,8 @@ in
 
 	  extraConfig = ''
     		set -g mouse on
+    		unbind C-b
+                set -g prefix C-z
        '';
   };
 
