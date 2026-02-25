@@ -77,7 +77,7 @@
            system.primaryUser = "pinhead";
 
            security.pki.certificates = [
-           ''
+             ''
              -----BEGIN CERTIFICATE-----
              MIIDSzCCAjOgAwIBAgIUCf/oYHjLxpVvmy9s9Eo55vE6e9swDQYJKoZIhvcNAQEL
              BQAwFjEUMBIGA1UEAwwLdG50aW5mcmEgQ0EwHhcNMjEwNzEzMTEzODM4WhcNMzEw
@@ -158,361 +158,63 @@
              useUserPackages = true;
              users.pinhead.imports = [
   	     ({pkgs, ...}:
-                 {
-                   home.stateVersion = "25.11";
-                   home.homeDirectory = "/Users/pinhead";
+           {
+             imports = [
+               ../../config/tmux.nix
+               ../../config/bash.nix
+               ../../config/emacs.nix
+               ../../config/startship.nix
+               ../../config/git.nix
+               ../../config/atuin.nix
+               ../../config/ghostty.nix
+             ];
 
-                   home.packages = [
-                     pkgs.ripgrep
-                     pkgs.curl
-                     pkgs.less
-                     pkgs.pass
-                     pkgs.isync
-                     pkgs.jetbrains-mono
-                     pkgs.go
-                     pkgs.gnupg
-                     pkgs.kubectl
-                     pkgs.blesh
-                     pkgs.mu
-                     pkgs.ansible
-                     pkgs.ansible-navigator
-                     pkgs.gnused
-                     pkgs.git-filter-repo
-                     pkgs.ffmpeg
-                     # server and client, we use just the client part
-                     pkgs.garage_2
+             home.stateVersion = "25.11";
+             home.homeDirectory = "/Users/pinhead";
 
-                     (pkgs.aspellWithDicts
-                       (dicts: with dicts; [ de en en-computers ]))
-                   ];
+             home.packages = [
+               pkgs.ripgrep
+               pkgs.curl
+               pkgs.less
+               pkgs.pass
+               pkgs.isync
+               pkgs.jetbrains-mono
+               pkgs.go
+               pkgs.gnupg
+               pkgs.kubectl
+               pkgs.blesh
+               pkgs.mu
+               pkgs.ansible
+               pkgs.ansible-navigator
+               pkgs.gnused
+               pkgs.git-filter-repo
+               pkgs.ffmpeg
 
-                   # (dicts: with dicts; [ de en en-computers en-science es fr la ]))
+               (pkgs.aspellWithDicts
+                 (dicts: with dicts; [ de en en-computers ]))
+             ];
 
-                   fonts.fontconfig.enable = true;
+             # (dicts: with dicts; [ de en en-computers en-science es fr la ]))
 
-                   home.sessionVariables = {
-                     PAGER = "less -X";
-                     CLICOLOR = 1;
-                   };
+             fonts.fontconfig.enable = true;
 
-                   # programs.gpg.enable = true;
+             home.sessionVariables = {
+               PAGER = "less -X";
+               CLICOLOR = 1;
+             };
 
-                   programs.bat.enable = false;
-                   programs.bat.config.theme = "TwoDark";
+             # programs.gpg.enable = true;
 
-                   programs.bash =  {
-                     enable = true;
-                     enableCompletion = true;
-
-                     bashrcExtra = ''
-                       export PATH=$HOME/.local/bin:/opt/homebrew/bin:/opt/podman/bin:$PATH
-                       source -- "$(blesh-share)"/ble.sh --attach=none
-                     '';
-
-                     initExtra = ''
-                       # if [[ "$INSIDE_EMACS" = 'vterm' ]] \
-                       #     && [[ -n "$EMACS_VTERM_PATH" ]] \
-                       #     && [[ -f "$EMACS_VTERM_PATH/etc/emacs-vterm-bash.sh" ]]; then
-                       # 	source "$EMACS_VTERM_PATH/etc/emacs-vterm-bash.sh"
-
-                       #   # command -v starship # && starship_precmd_user_func="vterm_prompt_end"
-                       # fi
-
-                       function vterm_printf(){
-                         if [ -n "$TMUX" ] && ([ "''${TERM%%-*}" = "tmux" ] || [ "''${TERM%%-*}" = "screen" ] ); then
-                           # Tell tmux to pass the escape sequences through
-                           printf "\ePtmux;\e\e]%s\007\e\\" "$1"
-                         elif [ "''${TERM%%-*}" = "screen" ]; then
-                           # GNU screen (screen, screen-256color, screen-256color-bce)
-                       	  printf "\eP\e]%s\007\e\\" "$1"
-                         else
-                           printf "\e]%s\e\\" "$1"
-                         fi
-                          }
-
-                       vterm_prompt_end() {
-                         vterm_printf "51;A$(whoami)@$(hostname):$(pwd)"
-                       }
-
-                       export KUBECOLOR_PRESET="light"
-                       PATH=$HOME/bin:$HOME/.local/bin:$PATH
-
-                       [[ ! ''${BLE_VERSION-} ]] || ble-attach
-                       '';
-
-                     shellAliases = {
-                       j="jobs -l";
-
-                       z="suspend";
-                       x="exit";
-                       pd="pushd";
-                       pd2="pushd +2";
-                       pd3="pushd +3";
-                       pd4="pushd +4";
-
-                       ls="ls --hyperlink=auto -NF --color";
-                       ll="ls --hyperlink=auto -l";
-                       li="ls --hyperlink=auto -li";
-                       la="ls --hyperlink=auto -la";
-                       lt="ls --hyperlink=auto -tral";
-
-                       dirs="dirs -v";
-
-                       egrep="egrep --color=tty -d skip";
-                       fgrep="fgrep --color=tty -d skip";
-                       grep="grep --color=tty -d skip";
-                       t="TERM=xterm-256color tmux";
-                       ta="TERM=xterm-256color tmux attach -t";
-                       e="emacs -nw";
-
-                       gpu="git pull";
-                       gps="git push";
-
-                       psh="ps -fu pinssh";
-                       kpsh="sudo pkill -u pinssh";
-
-                       E="SUDO_EDITOR=\"emacsclient -c -a emacs\" sudoedit";
-
-                       psu="ps -fu pinhead";
-                       psukill="sudo -u pinhead /usr/bin/pkill -U pinhead sshd";
-
-                       k="kubectl";
-
-                       m="emacsclient -n -e \\(magit-status\\)";
-                       p="podman";
-                       h="flatpak-spawn --host";
-                       hvirsh="flatpak-spawn --host virsh -c qemu:///system";
-
-                       ocphome="oc login -u root https://api.sno.lan.stderr.at:6443";
-                       ocphetzner="oc login -u root https://api.hetzner.tntinfra.net:6443";
-                       ocpaws="oc login -u root https://api.hub.aws.tntinfra.net:6443";
-
-                       uvirsh="virsh -c qemu:///session";
-                       svirsh="virsh -c qemu:///system";
-
-                       gnome-backup="dconf dump / > $${HOME}/etc/gnome_settings-$(hostname).backup";
-                       gnome-restore="dconf load -f / < $${HOME}/etc/gnome_settings-$(hostname).backup";
-
-                       oc="env KUBECTL_COMMAND=oc kubecolor";
-                     };
-                   };
-
-                   programs.emacs = {
-                     enable = true;
-                     extraPackages = epkgs: with epkgs; [
-                       vterm
-                       pdf-tools
-                       pkgs.mu
-                       mu4e
-                     ];
-                   };
-
-                   programs.browserpass.enable = true;
-                   programs.browserpass.browsers = [ "firefox" "chrome" "chromium" ];
-
-                   programs.kubecolor.enable = true;
-
-                   programs.starship = {
-                     enable = true;
-                     enableBashIntegration = true;
-                     settings = {
-                       format = pkgs.lib.concatStrings [
-                         "$username"
-                         "$hostname"
-                         "$kubernetes"
-                         "$conda"
-                         "$line_break"
-                         "$os"
-                         "$container"
-                         "$directory"
-                         "$git_branch"
-                         "$git_status"
-                         "$character"
-                       ];
-
-                       username.disabled = false;
-
-                       kubernetes = {
-                         disabled = false;
-                         format = "[⛵ $user on $context \\[$namespace\\]](dimmed green) ";
-                       };
-
-                       kubernetes.contexts = [
-                         {
-                           user_pattern = "system:admin/.*";
-                           user_alias   = "admin";
-                         }
-                         {
-                           user_pattern = "kube:admin/.*";
-                           user_alias   = "kube:admin";
-                         }
-                         {
-                           user_pattern = "root/.*";
-                           user_alias   = "root";
-                         }
-                         {
-                           context_pattern = "dev.local.cluster.k8s";
-                           context_alias   = "dev";
-                         }
-                         {
-                           context_pattern = ".*hub.*aws-tntinfra.*";
-                           context_alias   = "aws-hub";
-                           user_pattern = "root/.*";
-                           user_alias   = "root";
-                         }
-                         {
-                           context_pattern = ".*ocp.*aws-tntinfra.*";
-                           context_alias   = "aws-ocp";
-                         }
-                         {
-                           context_pattern = ".*/openshift-cluster/.*";
-                           context_alias   = "openshift";
-                         }
-                         {
-                           context_pattern = "gke_.*_(?P<var_cluster>[\w-]+)";
-                           context_alias   = "gke-$var_cluster";
-                         }
-                       ];
-
-                       character = {
-                         success_symbol = "[➜](bold green) ";
-                         error_symbol = "[✗](bold red) ";
-                       };
-
-                       aws.disabled = true;
-                     };
-                   };
-
-                   programs.git = {
-                     enable = true;
-
-                     signing = {
-                       signByDefault = true;
-                       key = "8C6444B3";
-                     };
-
-                     settings = {
-                       user = {
-                         name ="Toni Schmidbauer";
-                         email = "toni@stderr.at";
-                       };
-
-                       commit = {
-                         gpgSign = true;
-                       };
-
-                       apply = {
-                         whitespace = "warn";
-                       };
-
-                       diff = {
-                         rename = "copy";
-                         renamelimit = "600";
-                       };
-
-                       pager = {
-                         color = true;
-                       };
-
-                       color = {
-                         branch = "auto";
-                         diff = "auto";
-                         interactive = "auto";
-                         status = "auto";
-                       };
-
-                       push = {
-	                       default = "current";
-                       };
-
-                       pull = {
-	                       rebase = false;
-                       };
-
-                       init = {
-	                       defaultBranch = "main";
-                       };
-
-                       github = {
-	                       user = "tosmi";
-                       };
-
-                       alias = {
-                         ci = "commit -a";
-                         st = "status";
-                         plog = "log --pretty --color --dirstat --summary --stat";
-                         diffstat = "diff --stat";
-                         ds = "diff --stat";
-                         lol = "log --graph --decorate --pretty=oneline --abbrev-commit";
-                         lola = "log --graph --decorate --pretty=oneline --abbrev-commit --all";
-                         pu = "pull";
-                         pur = "pull --rebase";
-                         cam = "commit -am";
-                         ca = "commit -a";
-                         cm = "commit -m";
-                         co = "checkout";
-                         br = "branch -v";
-                         unstage = "reset HEAD --";
-                         find = "!sh -c 'git ls-tree -r --name-only HEAD | grep --color $1' -";
-                         cleanup = "!git branch --merged master | grep -v 'master$' | xargs git branch -d";
-                         g = "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative";
-                         h = "!git --no-pager log origin/master..HEAD --abbrev-commit --pretty=oneline";
-                         root = "rev-parse --show-toplevel";
-                       };
-                     };
+             programs.bat.enable = false;
+             programs.bat.config.theme = "TwoDark";
 
 
-                   };
+             programs.browserpass.enable = true;
+             programs.browserpass.browsers = [ "firefox" "chrome" "chromium" ];
 
-                   programs.atuin = {
-                     enable = true;
-                     enableBashIntegration = true;
-                     flags = [ "--disable-up-arrow" ];
-                   };
-
-                   programs.tmux = {
-	                   enable = true;
-
-	                   clock24 = true;
-	                   plugins = with pkgs.tmuxPlugins; [
-		                   sensible
-		                   yank
-		                   {
-			                   plugin = dracula;
-			                   extraConfig = ''
-                                 				set -g @dracula-show-battery false
-                                 				set -g @dracula-show-powerline true
-                                 				set -g @dracula-refresh-rate 10
-                                       '';
-		                   }
-	                   ];
-
-	                   extraConfig = ''
-                         		set -g mouse on
-                     '';
-                   };
-
-
-                   programs.ghostty = {
-                     enable = true;
-                     package = pkgs.emptyDirectory;
-                     enableBashIntegration = true;
-                     settings = {
-                       shell-integration = "bash";
-                       command = "/etc/profiles/per-user/pinhead/bin/bash";
-                       shell-integration-features = "ssh-terminfo";
-                       # font-family = "MesloLGS Nerd Font Mono";
-                       font-family = "JetBrains Mono";
-                       font-size = 18;
-                       background-opacity = 0.95;
-                       theme = "Argonaut";
-                       keybind = [
-
-                       ];
-                     };
-                   };
-                 }
-               )
+             programs.kubecolor.enable = true;
+           }
+         )
              ];
            };
          }
