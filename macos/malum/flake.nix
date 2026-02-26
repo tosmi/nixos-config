@@ -187,6 +187,7 @@
                       pkgs.passwdqc
                       pkgs.kubevirt
                       pkgs.uv
+                      pkgs.devcontainer
 
                       (pkgs.aspellWithDicts
                         (dicts: with dicts; [ de en en-computers ]))
