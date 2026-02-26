@@ -1,83 +1,83 @@
 {
- description = "my minimal flake";
+  description = "my minimal flake";
 
- inputs = {
-   nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+  inputs = {
+    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
 
-   home-manager.url = "github:nix-community/home-manager/master";
-   home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    home-manager.url = "github:nix-community/home-manager/master";
+    home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-   darwin.url = "github:nix-darwin/nix-darwin";
-   darwin.inputs.nixpkgs.follows = "nixpkgs";
- };
+    darwin.url = "github:nix-darwin/nix-darwin";
+    darwin.inputs.nixpkgs.follows = "nixpkgs";
+  };
 
- outputs = inputs: {
-   darwinConfigurations.fuji =
-     inputs.darwin.lib.darwinSystem {
-       system = "aarch64-darwin";
-       pkgs = import inputs.nixpkgs {
-         system = "aarch64-darwin";
-       };
-       modules = [
-         # because this is a list of modules and we want to call a function {}
-         # we have to put the function inside () which makes this a single list item.
-         # space separates list items in nix
-         ({ pkgs, ... }: {
+  outputs = inputs: {
+    darwinConfigurations.fuji =
+      inputs.darwin.lib.darwinSystem {
+        system = "aarch64-darwin";
+        pkgs = import inputs.nixpkgs {
+          system = "aarch64-darwin";
+        };
+        modules = [
+          # because this is a list of modules and we want to call a function {}
+          # we have to put the function inside () which makes this a single list item.
+          # space separates list items in nix
+          ({ pkgs, ... }: {
 
-           networking.hostName = "fuji";
+            networking.hostName = "fuji";
 
-           nix.extraOptions = ''
+            nix.extraOptions = ''
            experimental-features = flakes
            '';
 
-           nix.enable = false;
+            nix.enable = false;
 
-           services.openssh.enable = true;
+            services.openssh.enable = true;
 
-           # darwin preferences
-           programs.bash.enable = true;
-           programs.bash.completion.enable = true;
+            # darwin preferences
+            programs.bash.enable = true;
+            programs.bash.completion.enable = true;
 
-           environment.shells = [ pkgs.bash pkgs.zsh ];
+            environment.shells = [ pkgs.bash pkgs.zsh ];
 
-           users.users.pinhead.home = "/Users/pinhead";
+            users.users.pinhead.home = "/Users/pinhead";
 
-           programs.direnv.enable = true;
+            programs.direnv.enable = true;
 
-           #nix.extraOptions = ''
-           #  experimantal-features = nix-command flakes
-           #'';
+            #nix.extraOptions = ''
+            #  experimantal-features = nix-command flakes
+            #'';
 
-           environment.systemPackages = [ pkgs.coreutils ];
+            environment.systemPackages = [ pkgs.coreutils ];
 
-           system.keyboard.enableKeyMapping = true;
-           system.keyboard.remapCapsLockToEscape = true;
+            system.keyboard.enableKeyMapping = true;
+            system.keyboard.remapCapsLockToEscape = true;
 
-           # fonts.packages = [ (pkgs.nerdfonts.override { fonts = ["Meslo"]; }) ];
+            # fonts.packages = [ (pkgs.nerdfonts.override { fonts = ["Meslo"]; }) ];
 
-           system.defaults = {
-             finder.AppleShowAllExtensions = true;
-             finder._FXShowPosixPathInTitle = true;
+            system.defaults = {
+              finder.AppleShowAllExtensions = true;
+              finder._FXShowPosixPathInTitle = true;
 
-             NSGlobalDomain.AppleShowAllExtensions = true;
-             NSGlobalDomain.InitialKeyRepeat = 14;
-             NSGlobalDomain.KeyRepeat = 1;
+              NSGlobalDomain.AppleShowAllExtensions = true;
+              NSGlobalDomain.InitialKeyRepeat = 14;
+              NSGlobalDomain.KeyRepeat = 1;
 
-             dock.autohide = true;
+              dock.autohide = true;
 
-             CustomSystemPreferences = {
-               "org.gpgtools.common" = {
-                 UseKeychain = false;
-                 DisableKeychain = true;
-               };
-             };
-           };
+              CustomSystemPreferences = {
+                "org.gpgtools.common" = {
+                  UseKeychain = false;
+                  DisableKeychain = true;
+                };
+              };
+            };
 
-           system.stateVersion = 6;
-           system.primaryUser = "pinhead";
+            system.stateVersion = 6;
+            system.primaryUser = "pinhead";
 
-           security.pki.certificates = [
-             ''
+            security.pki.certificates = [
+              ''
              -----BEGIN CERTIFICATE-----
              MIIDSzCCAjOgAwIBAgIUCf/oYHjLxpVvmy9s9Eo55vE6e9swDQYJKoZIhvcNAQEL
              BQAwFjEUMBIGA1UEAwwLdG50aW5mcmEgQ0EwHhcNMjEwNzEzMTEzODM4WhcNMzEw
@@ -99,126 +99,130 @@
              t1/G6SW5/B+nUwSVBa/mjHelA0R7HZ73nkdwbxAAOg==
              -----END CERTIFICATE-----
            ''
-           ];
+            ];
 
-           homebrew = {
-             enable = true;
-             onActivation = {
-               autoUpdate = true;
-               cleanup = "zap";
-               upgrade = true;
-             };
+            homebrew = {
+              enable = true;
+              onActivation = {
+                autoUpdate = true;
+                cleanup = "zap";
+                upgrade = true;
+              };
 
-             global = {
-               brewfile = true;
-               lockfiles = false;
-             };
+              global = {
+                brewfile = true;
+                lockfiles = false;
+              };
 
-             #taps = [
-             #  "homebrew/cask"
-             #];
+              #taps = [
+              #  "homebrew/cask"
+              #];
 
-             brews = [
-               "trash"
-               "gemini-cli"
-               "passwdqc"
-               "opa"
-             ];
+              brews = [
+                "trash"
+                "gemini-cli"
+                "passwdqc"
+                "opa"
+              ];
 
-             casks = [
-               "ghostty"
-               "firefox"
-               "citrix-workspace"
-               "slack"
-               "jetbrains-toolbox"
-               "cursor"
-               "cursor-cli"
-               "microsoft-teams"
-               "stats"
-               "rectangle"
-               "vlc"
-               "windows-app"
-               "karabiner-elements"
-               "balenaetcher"
-               "tailscale-app"
-               "synology-drive"
-               "miro"
-               "signal"
-               "utm"
-               "podman-desktop"
-               "visual-studio-code"
-               "drawio"
-             ];
-           };
-         })
+              casks = [
+                "ghostty"
+                "firefox"
+                "citrix-workspace"
+                "slack"
+                "jetbrains-toolbox"
+                "cursor"
+                "cursor-cli"
+                "microsoft-teams"
+                "stats"
+                "rectangle"
+                "vlc"
+                "windows-app"
+                "karabiner-elements"
+                "balenaetcher"
+                "tailscale-app"
+                "synology-drive"
+                "miro"
+                "signal"
+                "utm"
+                "podman-desktop"
+                "visual-studio-code"
+                "drawio"
+              ];
+            };
+          })
 
-         inputs.home-manager.darwinModules.home-manager {
-           home-manager = {
-             useGlobalPkgs = true;
-             useUserPackages = true;
-             users.pinhead.imports = [
-  	     ({pkgs, ...}:
-           {
-             imports = [
-               ../../config/tmux.nix
-               ../../config/bash.nix
-               ../../config/emacs.nix
-               ../../config/startship.nix
-               ../../config/git.nix
-               ../../config/atuin.nix
-               ../../config/ghostty.nix
-             ];
+          inputs.home-manager.darwinModules.home-manager {
+            home-manager = {
+              useGlobalPkgs = true;
+              useUserPackages = true;
+              users.pinhead.imports = [
+  	            ({pkgs, ...}:
+                  {
+                    imports = [
+                      ../../config/tmux.nix
+                      ../../config/bash.nix
+                      ../../config/emacs.nix
+                      ../../config/startship.nix
+                      ../../config/git.nix
+                      ../../config/atuin.nix
+                      ../../config/ghostty.nix
+                    ];
 
-             home.stateVersion = "25.11";
-             home.homeDirectory = "/Users/pinhead";
+                    home.stateVersion = "25.11";
+                    home.homeDirectory = "/Users/pinhead";
 
-             home.packages = [
-               pkgs.ripgrep
-               pkgs.curl
-               pkgs.less
-               pkgs.pass
-               pkgs.isync
-               pkgs.jetbrains-mono
-               pkgs.go
-               pkgs.gnupg
-               pkgs.kubectl
-               pkgs.blesh
-               pkgs.mu
-               pkgs.ansible
-               pkgs.ansible-navigator
-               pkgs.gnused
-               pkgs.git-filter-repo
-               pkgs.ffmpeg
+                    home.packages = [
+                      pkgs.ripgrep
+                      pkgs.curl
+                      pkgs.less
+                      pkgs.pass
+                      pkgs.isync
+                      pkgs.jetbrains-mono
+                      pkgs.go
+                      pkgs.gnupg
+                      pkgs.kubectl
+                      pkgs.blesh
+                      pkgs.mu
+                      pkgs.ansible
+                      pkgs.ansible-navigator
+                      pkgs.ansible-lint
+                      pkgs.gnused
+                      pkgs.git-filter-repo
+                      pkgs.ffmpeg
+                      pkgs.passwdqc
+                      pkgs.kubevirt
+                      pkgs.uv
 
-               (pkgs.aspellWithDicts
-                 (dicts: with dicts; [ de en en-computers ]))
-             ];
+                      (pkgs.aspellWithDicts
+                        (dicts: with dicts; [ de en en-computers ]))
+                    ];
 
-             # (dicts: with dicts; [ de en en-computers en-science es fr la ]))
+                    # (dicts: with dicts; [ de en en-computers en-science es fr la ]))
 
-             fonts.fontconfig.enable = true;
+                    fonts.fontconfig.enable = true;
 
-             home.sessionVariables = {
-               PAGER = "less -X";
-               CLICOLOR = 1;
-             };
+                    home.sessionVariables = {
+                      PAGER = "less -X";
+                      CLICOLOR = 1;
+                    };
 
-             # programs.gpg.enable = true;
+                    # programs.gpg.enable = true;
 
-             programs.bat.enable = false;
-             programs.bat.config.theme = "TwoDark";
+                    programs.bat.enable = false;
+                    programs.bat.config.theme = "TwoDark";
 
 
-             programs.browserpass.enable = true;
-             programs.browserpass.browsers = [ "firefox" "chrome" "chromium" ];
+                    programs.browserpass.enable = true;
+                    programs.browserpass.browsers = [ "firefox" "chrome" "chromium" ];
 
-             programs.kubecolor.enable = true;
-           }
-         )
-             ];
-           };
-         }
-       ];
-     };
+                    programs.kubecolor.enable = true;
+                  }
+                )
+              ];
+            };
+          }
+        ];
+      };
   };
 }
