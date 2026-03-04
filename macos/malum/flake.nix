@@ -119,6 +119,11 @@
               brews = [
                 "trash"
                 "gemini-cli"
+                "opencode"
+                "ollama"
+                "llama.cpp"
+                "opa"
+                "passwdqc"
               ];
 
               casks = [
@@ -141,6 +146,7 @@
                 "signal"
                 "utm"
                 "visual-studio-code"
+                "tunnelblickusor"
               ];
             };
           })
@@ -184,7 +190,6 @@
                       pkgs.gnused
                       pkgs.git-filter-repo
                       pkgs.ffmpeg
-                      pkgs.passwdqc
                       pkgs.kubevirt
                       pkgs.uv
                       pkgs.devcontainer
