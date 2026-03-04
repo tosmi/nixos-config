@@ -7,6 +7,7 @@
       pdf-tools
       pkgs.mu
       mu4e
+      treesit-grammars.with-all-grammars
     ];
   };
   services.emacs.enable = true;
