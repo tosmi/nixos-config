@@ -190,6 +190,7 @@
                pkgs.git-filter-repo
                pkgs.ffmpeg
                pkgs.devcontainer
+               pkgs.stern
 
                (pkgs.aspellWithDicts
                  (dicts: with dicts; [ de en en-computers ]))
