@@ -132,7 +132,7 @@
                       pkgs.less
                       pkgs.pass
                       pkgs.isync
-                      pkgs.jetbrains-mono
+                      # pkgs.jetbrains-mono
                       pkgs.go
                       pkgs.gnupg
                       pkgs.kubectl
