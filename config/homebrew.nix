@@ -20,8 +20,10 @@
     brews = [
       "trash"
       "gemini-cli"
+      "opencode"
       "passwdqc"
       "opa"
+      "ansible-language-server"
     ];
 
     casks = [
@@ -30,6 +32,7 @@
       "citrix-workspace"
       "slack"
       "jetbrains-toolbox"
+      "font-jetbrains-mono"
       "cursor"
       "cursor-cli"
       "microsoft-teams"
@@ -48,6 +51,7 @@
       "visual-studio-code"
       "drawio"
       "tunnelblick"
+      "zen"
     ];
   };
 }
