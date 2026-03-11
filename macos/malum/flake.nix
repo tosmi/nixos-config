@@ -22,60 +22,63 @@
           # because this is a list of modules and we want to call a function {}
           # we have to put the function inside () which makes this a single list item.
           # space separates list items in nix
-          ({ pkgs, ... }: {
+          ({ pkgs, lib, ... }:
+            let
+              global = import ../../config/globals.nix;
+            in
+            {
+              networking.hostName = "malum";
 
-            networking.hostName = "malum";
-
-            nix.extraOptions = ''
+              nix.extraOptions = ''
            experimental-features = flakes
            '';
 
-            services.openssh.enable = true;
+              services.openssh.enable = true;
 
-            # darwin preferences
-            programs.bash.enable = true;
-            programs.bash.completion.enable = true;
+              # darwin preferences
+              programs.bash.enable = true;
+              programs.bash.completion.enable = true;
 
-            environment.shells = [ pkgs.bash pkgs.zsh ];
+              environment.shells = [ pkgs.bash pkgs.zsh ];
 
-            users.users.pinhead.home = "/Users/pinhead";
+              users.users.pinhead.home = "/Users/pinhead";
 
-            programs.direnv.enable = true;
+              programs.direnv.enable = true;
 
-            #nix.extraOptions = ''
-            #  experimantal-features = nix-command flakes
-            #'';
+              #nix.extraOptions = ''
+              #  experimantal-features = nix-command flakes
+              #'';
 
-            environment.systemPackages = [ pkgs.coreutils ];
+              environment.systemPackages = [ pkgs.coreutils ];
 
-            system.keyboard.enableKeyMapping = true;
-            system.keyboard.remapCapsLockToEscape = true;
+              system.keyboard.enableKeyMapping = true;
+              system.keyboard.remapCapsLockToEscape = true;
 
-            # fonts.packages = [ (pkgs.nerdfonts.override { fonts = ["Meslo"]; }) ];
+              # fonts.packages = [ (pkgs.nerdfonts.override { fonts = ["Meslo"]; }) ];
 
-            system.defaults = {
-              finder.AppleShowAllExtensions = true;
-              finder._FXShowPosixPathInTitle = true;
+              system.defaults = {
+                finder.AppleShowAllExtensions = true;
+                finder._FXShowPosixPathInTitle = true;
 
-              NSGlobalDomain.AppleShowAllExtensions = true;
-              NSGlobalDomain.InitialKeyRepeat = 14;
-              NSGlobalDomain.KeyRepeat = 1;
+                NSGlobalDomain.AppleShowAllExtensions = true;
+                NSGlobalDomain.InitialKeyRepeat = 14;
+                NSGlobalDomain.KeyRepeat = 1;
 
-              dock.autohide = true;
+                dock.autohide = true;
 
-              CustomSystemPreferences = {
-                "org.gpgtools.common" = {
-                  UseKeychain = false;
-                  DisableKeychain = true;
+                CustomSystemPreferences = {
+                  "org.gpgtools.common" = {
+                    UseKeychain = false;
+                    DisableKeychain = true;
+                  };
                 };
               };
-            };
 
-            system.stateVersion = 6;
-            system.primaryUser = "pinhead";
+              system.stateVersion = 6;
+              system.primaryUser = "pinhead";
 
-            security.pki.certificates = [
-              ''
+              security.pki.certificates = [
+                ''
              -----BEGIN CERTIFICATE-----
              MIIDSzCCAjOgAwIBAgIUCf/oYHjLxpVvmy9s9Eo55vE6e9swDQYJKoZIhvcNAQEL
              BQAwFjEUMBIGA1UEAwwLdG50aW5mcmEgQ0EwHhcNMjEwNzEzMTEzODM4WhcNMzEw
@@ -96,61 +99,29 @@
              Lv+Z+rzQgoylI2IFe/EswzgUJlOKZAL+gnslVRZAVsl/VfWI5YFzMgNANAIqNp8p
              t1/G6SW5/B+nUwSVBa/mjHelA0R7HZ73nkdwbxAAOg==
              -----END CERTIFICATE-----
-           ''
-            ];
-
-            homebrew = {
-              enable = true;
-              onActivation = {
-                autoUpdate = true;
-                cleanup = "zap";
-                upgrade = true;
-              };
-
-              global = {
-                brewfile = true;
-                lockfiles = false;
-              };
-
-              #taps = [
-              #  "homebrew/cask"
-              #];
-
-              brews = [
-                "trash"
-                "gemini-cli"
-                "opencode"
-                "ollama"
-                "llama.cpp"
-                "opa"
-                "passwdqc"
+                ''
               ];
 
-              casks = [
-                "ghostty"
-                "firefox"
-                "citrix-workspace"
-                "slack"
-                "jetbrains-toolbox"
-                "cursor"
-                "cursor-cli"
-                "microsoft-teams"
-                "stats"
-                "rectangle"
-                "vlc"
-                "windows-app"
-                "karabiner-elements"
-                "balenaetcher"
-                "synology-drive"
-                "miro"
-                "signal"
-                "utm"
-                "visual-studio-code"
-                "drawio"
-                "tunnelblickusor"
-              ];
-            };
-          })
+              homebrew = {
+                enable = true;
+                onActivation = {
+                  autoUpdate = true;
+                  cleanup = "zap";
+                  upgrade = true;
+                };
+
+                global = {
+                  brewfile = true;
+                };
+
+                brews = [
+                  "ollama"
+                  "llama.cpp"
+                ] ++ global.brews;
+
+                casks = global.casks;
+              };
+            })
 
           inputs.home-manager.darwinModules.home-manager {
             home-manager = {
@@ -159,7 +130,6 @@
               users.pinhead.imports = [
   	            ({pkgs, ...}:
                   {
-
                     imports = [
                       ../../config/tmux.nix
                       ../../config/bash.nix
@@ -178,7 +148,7 @@
                       pkgs.less
                       pkgs.pass
                       pkgs.isync
-                      pkgs.jetbrains-mono
+                      # pkgs.jetbrains-mono
                       pkgs.go
                       pkgs.gnupg
                       pkgs.kubectl
