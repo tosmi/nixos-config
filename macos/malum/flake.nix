@@ -146,6 +146,7 @@
                 "signal"
                 "utm"
                 "visual-studio-code"
+                "drawio"
                 "tunnelblickusor"
               ];
             };

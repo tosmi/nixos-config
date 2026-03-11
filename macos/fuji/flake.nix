@@ -144,7 +144,6 @@
                       pkgs.gnused
                       pkgs.git-filter-repo
                       pkgs.ffmpeg
-                      pkgs.passwdqc
                       pkgs.kubevirt
                       pkgs.devcontainer
                       pkgs.stern
