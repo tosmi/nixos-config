@@ -1,5 +1,5 @@
 {
-  description = "my minimal flake";
+  description = "Nix-darwin configuration for Fuji";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
@@ -22,8 +22,11 @@
           # because this is a list of modules and we want to call a function {}
           # we have to put the function inside () which makes this a single list item.
           # space separates list items in nix
-          ({ pkgs, ... }: {
-
+          ({ pkgs, ... }:
+            let
+              global = import ../../config/globals.nix;
+            in
+            {
             networking.hostName = "fuji";
 
             nix.extraOptions = ''
@@ -101,9 +104,22 @@
            ''
             ];
 
-            imports = [
-              ../../config/homebrew.nix
-            ];
+            homebrew = {
+                enable = true;
+                onActivation = {
+                  autoUpdate = true;
+                  cleanup = "zap";
+                  upgrade = true;
+                };
+
+                global = {
+                  brewfile = true;
+                };
+
+                brews = [] ++ global.brews;
+
+                casks = global.casks;
+              };
           })
 
           inputs.home-manager.darwinModules.home-manager {
