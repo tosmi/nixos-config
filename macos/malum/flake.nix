@@ -164,6 +164,10 @@
                       pkgs.kubevirt
                       pkgs.uv
                       pkgs.devcontainer
+                      pkgs.stern
+                      pkgs.ruff
+                      pkgs.yaml-language-server
+                      pkgs.gopls
 
                       (pkgs.aspellWithDicts
                         (dicts: with dicts; [ de en en-computers ]))
