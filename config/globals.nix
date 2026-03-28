@@ -10,6 +10,8 @@
   casks = [
     "ghostty"
     "firefox"
+    "zen"
+    "google-chrome"
     "citrix-workspace"
     "slack"
     "jetbrains-toolbox"
@@ -30,6 +32,9 @@
     "visual-studio-code"
     "drawio"
     "tunnelblick"
-    "zen"
+    "tailscale-app"
+    "podman-desktop"
+    "calibre"
+    "yubico-authenticator"
   ];
 }
