@@ -5,6 +5,7 @@
     "opencode"
     "opa"
     "passwdqc"
+    "block-goose-cli"
   ];
 
   casks = [
@@ -31,5 +32,10 @@
     "drawio"
     "tunnelblick"
     "zen"
+  ];
+
+  taps = [
+#    "netbirdio/tap/netbird"
+#    "netbirdio/tap/netbird-ui"
   ];
 }
