@@ -149,8 +149,11 @@
                       pkgs.uv
                       pkgs.devcontainer
                       pkgs.stern
-                      pkgs.ruff
+
+                      # lsp's
+                      pkgs.ruff # python
                       pkgs.yaml-language-server
+                      pkgs.bash-language-server
                       pkgs.gopls
 
                       (pkgs.aspellWithDicts
