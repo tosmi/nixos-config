@@ -30,7 +30,7 @@
               networking.hostName = "malum";
 
               nix.extraOptions = ''
-           experimental-features = flakes
+           experimental-features = flakes nix-command
            '';
 
               services.openssh.enable = true;
@@ -120,6 +120,8 @@
                 ] ++ global.brews;
 
                 casks = global.casks;
+
+                taps = global.taps;
               };
             })
 
@@ -165,9 +167,13 @@
                       pkgs.uv
                       pkgs.devcontainer
                       pkgs.stern
-                      pkgs.ruff
+                      pkgs.awscli2
+
+                      # lsp's
+                      pkgs.ruff  # python
                       pkgs.yaml-language-server
                       pkgs.gopls
+                      pkgs.bash-language-server
 
                       (pkgs.aspellWithDicts
                         (dicts: with dicts; [ de en en-computers ]))
