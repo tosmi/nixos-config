@@ -166,20 +166,24 @@
                       pkgs.go
                       pkgs.gnupg
                       pkgs.kubectl
+                      pkgs.kubectl-neat
                       pkgs.blesh
                       pkgs.mu
                       pkgs.ansible
-                      pkgs.ansible-navigator
                       pkgs.ansible-lint
+                      pkgs.ansible-navigator
                       pkgs.gnused
                       pkgs.git-filter-repo
                       pkgs.ffmpeg
                       pkgs.kubevirt
+                      pkgs.uv
                       pkgs.devcontainer
                       pkgs.stern
-                      pkgs.ruff
-                      pkgs.uv
+
+                      # lsp's
+                      pkgs.ruff # python
                       pkgs.yaml-language-server
+                      pkgs.bash-language-server
                       pkgs.gopls
 
                       (pkgs.aspellWithDicts

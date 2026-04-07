@@ -6,6 +6,7 @@
     "opa"
     "passwdqc"
     "ykman"
+    "block-goose-cli"
   ];
 
   casks = [
@@ -38,5 +39,10 @@
     "calibre"
     "yubico-authenticator"
     "ivpn"
+  ];
+
+  taps = [
+#    "netbirdio/tap/netbird"
+#    "netbirdio/tap/netbird-ui"
   ];
 }
