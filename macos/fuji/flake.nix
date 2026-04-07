@@ -17,6 +17,18 @@
         system = "aarch64-darwin";
         pkgs = import inputs.nixpkgs {
           system = "aarch64-darwin";
+
+          # required until https://github.com/NixOS/nixpkgs/pull/502769
+          # gets merged into unstable: https://nixpkgs-tracker.ocfox.me/?pr=502769
+          overlays = [
+            (final: prev: {
+              direnv = prev.direnv.overrideAttrs (_: {
+                postPatch = ''
+                        substituteInPlace GNUmakefile --replace-fail " -linkmode=external" ""
+                          '';
+              });
+            })
+          ];
         };
         modules = [
           # because this is a list of modules and we want to call a function {}
@@ -27,84 +39,86 @@
               global = import ../../config/globals.nix;
             in
             {
-            networking.hostName = "fuji";
+              networking.hostName = "fuji";
 
-            nix.extraOptions = ''
-           experimental-features = flakes
-           '';
+              nix.extraOptions = ''
+                experimental-features = flakes
+              '';
 
-            nix.enable = false;
+              nix.enable = false;
 
-            services.openssh.enable = true;
+              services.openssh.enable = true;
 
-            # darwin preferences
-            programs.bash.enable = true;
-            programs.bash.completion.enable = true;
+              # darwin preferences
+              programs.bash.enable = true;
+              programs.bash.completion.enable = true;
 
-            environment.shells = [ pkgs.bash pkgs.zsh ];
+              programs.direnv.enable = true;
 
-            users.users.pinhead.home = "/Users/pinhead";
+              environment.shells = [ pkgs.bash pkgs.zsh ];
 
-            programs.direnv.enable = true;
+              users.users.pinhead.home = "/Users/pinhead";
 
-            #nix.extraOptions = ''
-            #  experimantal-features = nix-command flakes
-            #'';
+              #nix.extraOptions = ''
+              #  experimantal-features = nix-command flakes
+              #'';
 
-            environment.systemPackages = [ pkgs.coreutils ];
+              environment.systemPackages = [
+                pkgs.coreutils
+              ];
 
-            system.keyboard.enableKeyMapping = true;
-            system.keyboard.remapCapsLockToEscape = true;
+              system.keyboard.enableKeyMapping = true;
+              system.keyboard.remapCapsLockToEscape = true;
 
-            # fonts.packages = [ (pkgs.nerdfonts.override { fonts = ["Meslo"]; }) ];
+              # fonts.packages = [ (pkgs.nerdfonts.override { fonts = ["Meslo"]; }) ];
 
-            system.defaults = {
-              finder.AppleShowAllExtensions = true;
-              finder._FXShowPosixPathInTitle = true;
+              system.defaults = {
+                finder.AppleShowAllExtensions = true;
+                finder._FXShowPosixPathInTitle = true;
 
-              NSGlobalDomain.AppleShowAllExtensions = true;
-              NSGlobalDomain.InitialKeyRepeat = 14;
-              NSGlobalDomain.KeyRepeat = 1;
+                NSGlobalDomain.AppleShowAllExtensions = true;
+                NSGlobalDomain.InitialKeyRepeat = 14;
+                NSGlobalDomain.KeyRepeat = 1;
 
-              dock.autohide = true;
+                dock.autohide = true;
 
-              CustomSystemPreferences = {
-                "org.gpgtools.common" = {
-                  UseKeychain = false;
-                  DisableKeychain = true;
+                CustomSystemPreferences = {
+                  "org.gpgtools.common" = {
+                    UseKeychain = false;
+                    DisableKeychain = true;
+                  };
                 };
               };
-            };
 
-            system.stateVersion = 6;
-            system.primaryUser = "pinhead";
+              system.stateVersion = 6;
+              system.primaryUser = "pinhead";
 
-            security.pki.certificates = [
-              ''
-             -----BEGIN CERTIFICATE-----
-             MIIDSzCCAjOgAwIBAgIUCf/oYHjLxpVvmy9s9Eo55vE6e9swDQYJKoZIhvcNAQEL
-             BQAwFjEUMBIGA1UEAwwLdG50aW5mcmEgQ0EwHhcNMjEwNzEzMTEzODM4WhcNMzEw
-             NzExMTEzODM4WjAWMRQwEgYDVQQDDAt0bnRpbmZyYSBDQTCCASIwDQYJKoZIhvcN
-             AQEBBQADggEPADCCAQoCggEBAJzEkp5JqJmhE86G+OilwTSDxJn2svGtY3USapmC
-             PfVpMf1kj0o0vUhULqUcbp4AQ3J/NzfsPuwfX39zNF/Tp+cSD2lS63sEyXRb20dh
-             9DVOmBH4R0uePir83OfJhvoD7kBIYYESHyC0B/V7TJ/V7fDwkQFDHZFnAZytpMCq
-             H4ctZwemIftKeTOvytcTeZHaIMHu1Ze+N6wn4alyY6TyGcz+i65BtaMeqoVx503p
-             HrBPMbWLSFQW6f3BN9joY0K3VDBSYCyFw4Wkqph/AcQiQylvv6u3hQdiu3An4PzZ
-             36ac92HeAbaOh7CT5c1z8eY93CFFnAajhLeV+bsVySrgLusCAwEAAaOBkDCBjTAd
-             BgNVHQ4EFgQUMsXWXteGVZ0z3k5vslGek74xaUswUQYDVR0jBEowSIAUMsXWXteG
-             VZ0z3k5vslGek74xaUuhGqQYMBYxFDASBgNVBAMMC3RudGluZnJhIENBghQJ/+hg
-             eMvGlW+bL2z0Sjnm8Tp72zAMBgNVHRMEBTADAQH/MAsGA1UdDwQEAwIBBjANBgkq
-             hkiG9w0BAQsFAAOCAQEAczy5XZVQ1OqVznOHSIzucsfa7+/0TUw94ebzxGUMZJis
-             j7yGvdD1aDf/DrL2UCPiP2av3EGeK1eMdQ/U845O9HcA6t24wI5vcbK35rddSdVO
-             o/fDu5WyA5naEjPPzdzFt/wVWxfFslCHQGAhOOz9RF8631CyEfjYetNA9b1dDOEy
-             0r/nmIaJ7GmeDoQ6W0cnYxUUi6zsxpAedqnYTfpB5gntB4hXiblhGiOMkw3E4NHy
-             Lv+Z+rzQgoylI2IFe/EswzgUJlOKZAL+gnslVRZAVsl/VfWI5YFzMgNANAIqNp8p
-             t1/G6SW5/B+nUwSVBa/mjHelA0R7HZ73nkdwbxAAOg==
-             -----END CERTIFICATE-----
-           ''
-            ];
+              security.pki.certificates = [
+                ''
+                  -----BEGIN CERTIFICATE-----
+                  MIIDSzCCAjOgAwIBAgIUCf/oYHjLxpVvmy9s9Eo55vE6e9swDQYJKoZIhvcNAQEL
+                  BQAwFjEUMBIGA1UEAwwLdG50aW5mcmEgQ0EwHhcNMjEwNzEzMTEzODM4WhcNMzEw
+                  NzExMTEzODM4WjAWMRQwEgYDVQQDDAt0bnRpbmZyYSBDQTCCASIwDQYJKoZIhvcN
+                  AQEBBQADggEPADCCAQoCggEBAJzEkp5JqJmhE86G+OilwTSDxJn2svGtY3USapmC
+                  PfVpMf1kj0o0vUhULqUcbp4AQ3J/NzfsPuwfX39zNF/Tp+cSD2lS63sEyXRb20dh
+                  9DVOmBH4R0uePir83OfJhvoD7kBIYYESHyC0B/V7TJ/V7fDwkQFDHZFnAZytpMCq
+                  H4ctZwemIftKeTOvytcTeZHaIMHu1Ze+N6wn4alyY6TyGcz+i65BtaMeqoVx503p
+                  HrBPMbWLSFQW6f3BN9joY0K3VDBSYCyFw4Wkqph/AcQiQylvv6u3hQdiu3An4PzZ
+                  36ac92HeAbaOh7CT5c1z8eY93CFFnAajhLeV+bsVySrgLusCAwEAAaOBkDCBjTAd
+                  BgNVHQ4EFgQUMsXWXteGVZ0z3k5vslGek74xaUswUQYDVR0jBEowSIAUMsXWXteG
+                  VZ0z3k5vslGek74xaUuhGqQYMBYxFDASBgNVBAMMC3RudGluZnJhIENBghQJ/+hg
+                  eMvGlW+bL2z0Sjnm8Tp72zAMBgNVHRMEBTADAQH/MAsGA1UdDwQEAwIBBjANBgkq
+                  hkiG9w0BAQsFAAOCAQEAczy5XZVQ1OqVznOHSIzucsfa7+/0TUw94ebzxGUMZJis
+                  j7yGvdD1aDf/DrL2UCPiP2av3EGeK1eMdQ/U845O9HcA6t24wI5vcbK35rddSdVO
+                  o/fDu5WyA5naEjPPzdzFt/wVWxfFslCHQGAhOOz9RF8631CyEfjYetNA9b1dDOEy
+                  0r/nmIaJ7GmeDoQ6W0cnYxUUi6zsxpAedqnYTfpB5gntB4hXiblhGiOMkw3E4NHy
+                  Lv+Z+rzQgoylI2IFe/EswzgUJlOKZAL+gnslVRZAVsl/VfWI5YFzMgNANAIqNp8p
+                  t1/G6SW5/B+nUwSVBa/mjHelA0R7HZ73nkdwbxAAOg==
+                  -----END CERTIFICATE-----
+                ''
+              ];
 
-            homebrew = {
+              homebrew = {
                 enable = true;
                 onActivation = {
                   autoUpdate = true;

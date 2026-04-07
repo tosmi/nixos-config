@@ -5,6 +5,7 @@
     "opencode"
     "opa"
     "passwdqc"
+    "ykman"
   ];
 
   casks = [
@@ -36,5 +37,6 @@
     "podman-desktop"
     "calibre"
     "yubico-authenticator"
+    "ivpn"
   ];
 }
