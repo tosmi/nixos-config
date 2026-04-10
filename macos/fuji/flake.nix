@@ -20,15 +20,15 @@
 
           # required until https://github.com/NixOS/nixpkgs/pull/502769
           # gets merged into unstable: https://nixpkgs-tracker.ocfox.me/?pr=502769
-          overlays = [
-            (final: prev: {
-              direnv = prev.direnv.overrideAttrs (_: {
-                postPatch = ''
-                        substituteInPlace GNUmakefile --replace-fail " -linkmode=external" ""
-                          '';
-              });
-            })
-          ];
+          # overlays = [
+          #   (final: prev: {
+          #     direnv = prev.direnv.overrideAttrs (_: {
+          #       postPatch = ''
+          #               substituteInPlace GNUmakefile --replace-fail " -linkmode=external" ""
+          #                 '';
+          #     });
+          #   })
+          # ];
         };
         modules = [
           # because this is a list of modules and we want to call a function {}
