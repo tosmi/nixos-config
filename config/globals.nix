@@ -38,7 +38,9 @@
     "podman-desktop"
     "calibre"
     "yubico-authenticator"
-    "ivpn"
+    "caffeine"
+    "little-snitch"
+    "launchbar"
   ];
 
   taps = [
