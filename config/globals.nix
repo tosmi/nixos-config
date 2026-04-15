@@ -41,6 +41,7 @@
     "caffeine"
     "little-snitch"
     "launchbar"
+    "orion"
   ];
 
   taps = [
