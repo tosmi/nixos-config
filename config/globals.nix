@@ -42,6 +42,7 @@
     "little-snitch"
     "launchbar"
     "orion"
+    "google-drive"
   ];
 
   taps = [
