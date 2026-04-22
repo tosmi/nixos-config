@@ -67,6 +67,26 @@
                 pkgs.coreutils
               ];
 
+              # nix-darwin does not have extraRules
+              # security.sudo = {
+              #   extraRules = [
+              #     {
+              #       commands = [
+              #         {
+              #           command = "/usr/bin/pmset -a hibernatemode 3";
+              #           options = [ "NOPASSWD" ];
+              #         }
+              #       ];
+              #       users = [ "pinhead" ];
+              #     }
+              #   ];
+              # };
+
+              environment.etc."sudoers.d/20-hibernate".text =''
+              pinhead ALL=(ALL:ALL) NOPASSWD: /usr/bin/pmset -a hibernatemode 3
+              pinhead ALL=(ALL:ALL) NOPASSWD: /usr/bin/pmset -a hibernatemode 25
+              '';
+
               system.keyboard.enableKeyMapping = true;
               system.keyboard.remapCapsLockToEscape = true;
 
