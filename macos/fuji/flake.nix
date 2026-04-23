@@ -221,6 +221,10 @@
                     home.sessionVariables = {
                       PAGER = "less -X";
                       CLICOLOR = 1;
+                      # required because of https://github.com/nixos/nixpkgs/issues/476684
+                      # spell can find filters and modes but not the dicts when
+                      # we do not use pkgs.aspellWithDicts
+                      ASPELL_CONF = "dict-dir ${pkgs.aspellWithDicts (dicts: with dicts; [ en ])}/lib/aspell";
                     };
 
                     # programs.gpg.enable = true;
