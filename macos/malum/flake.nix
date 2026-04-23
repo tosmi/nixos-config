@@ -175,11 +175,15 @@
                       pkgs.gopls
                       pkgs.bash-language-server
 
-                      (pkgs.aspellWithDicts
-                        (dicts: with dicts; [ de en en-computers ]))
-                    ];
+                      pkgs.aspell
+                      pkgs.aspellDicts.de
+                      pkgs.aspellDicts.en
+                      pkgs.aspellDicts.en-computers
 
-                    # (dicts: with dicts; [ de en en-computers en-science es fr la ]))
+                      # https://github.com/nixos/nixpkgs/issues/476684
+                      # (pkgs.aspellWithDicts
+                      #   (dicts: with dicts; [ de en en-computers ]))
+                    ];
 
                     fonts.fontconfig.enable = true;
 
