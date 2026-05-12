@@ -43,6 +43,7 @@
     "launchbar"
     "orion"
     "google-drive"
+    "gcloud-cli"
   ];
 
   taps = [
