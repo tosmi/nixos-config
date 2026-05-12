@@ -44,6 +44,7 @@
     "orion"
     "google-drive"
     "gcloud-cli"
+    "libreoffice"
   ];
 
   taps = [
