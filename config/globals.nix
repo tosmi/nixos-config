@@ -43,6 +43,7 @@
     "launchbar"
     "orion"
     "google-drive"
+    "libreoffice"
   ];
 
   taps = [
