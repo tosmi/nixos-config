@@ -43,7 +43,9 @@
     "launchbar"
     "orion"
     "google-drive"
+    "gcloud-cli"
     "libreoffice"
+    "thaw"
   ];
 
   taps = [
