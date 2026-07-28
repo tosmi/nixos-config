@@ -44,7 +44,8 @@
     "orion"
     "google-drive"
     "gcloud-cli"
-    "libreoffice"
+    # slow
+    # "libreoffice"
     "thaw"
   ];
 

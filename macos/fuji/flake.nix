@@ -144,6 +144,9 @@
                   autoUpdate = true;
                   cleanup = "zap";
                   upgrade = true;
+                  extraFlags = [
+                    "--force-cleanup"
+                  ];
                 };
 
                 global = {
@@ -199,6 +202,7 @@
                       pkgs.uv
                       pkgs.devcontainer
                       pkgs.stern
+                      pkgs.k9s
 
                       # lsp's
                       pkgs.ruff # python
