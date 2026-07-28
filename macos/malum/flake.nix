@@ -4,6 +4,7 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
 
+
     home-manager.url = "github:nix-community/home-manager/master";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -17,6 +18,7 @@
         system = "aarch64-darwin";
         pkgs = import inputs.nixpkgs {
           system = "aarch64-darwin";
+          config.allowUnfree = true;
         };
         modules = [
           # because this is a list of modules and we want to call a function {}
@@ -26,7 +28,7 @@
             let
               global = import ../../config/globals.nix;
             in
-            {
+              {
               networking.hostName = "malum";
 
               nix.extraOptions = ''
@@ -168,6 +170,9 @@
                       pkgs.devcontainer
                       pkgs.stern
                       pkgs.awscli2
+                      pkgs.opencode
+                      pkgs.claude-code
+                      pkgs.claude-agent-acp
 
                       # lsp's
                       pkgs.ruff  # python
@@ -175,14 +180,14 @@
                       pkgs.gopls
                       pkgs.bash-language-server
 
-                      pkgs.aspell
-                      pkgs.aspellDicts.de
-                      pkgs.aspellDicts.en
-                      pkgs.aspellDicts.en-computers
+                      # pkgs.aspell
+                      # pkgs.aspellDicts.de
+                      # pkgs.aspellDicts.en
+                      # pkgs.aspellDicts.en-computers
 
                       # https://github.com/nixos/nixpkgs/issues/476684
-                      # (pkgs.aspellWithDicts
-                      #   (dicts: with dicts; [ de en en-computers ]))
+                      (pkgs.aspellWithDicts
+                        (dicts: with dicts; [ de en en-computers ]))
                     ];
 
                     fonts.fontconfig.enable = true;
@@ -193,7 +198,7 @@
                       # required because of https://github.com/nixos/nixpkgs/issues/476684
                       # spell can find filters and modes but not the dicts when
                       # we do not use pkgs.aspellWithDicts
-                      ASPELL_CONF = "dict-dir ${pkgs.aspellWithDicts (dicts: with dicts; [ en ])}/lib/aspell";
+                      # ASPELL_CONF = "dict-dir ${pkgs.aspellWithDicts (dicts: with dicts; [ en ])}/lib/aspell";
                     };
 
                     # programs.gpg.enable = true;

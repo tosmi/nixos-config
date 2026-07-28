@@ -20,7 +20,6 @@
     brews = [
       "trash"
       "gemini-cli"
-      "opencode"
       "passwdqc"
       "opa"
       "ansible-language-server"
