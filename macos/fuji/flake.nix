@@ -203,6 +203,7 @@
                       pkgs.devcontainer
                       pkgs.stern
                       pkgs.k9s
+                      pkgs.awscli2
 
                       # lsp's
                       pkgs.ruff # python
