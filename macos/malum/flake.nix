@@ -177,8 +177,10 @@
                       # lsp's
                       pkgs.ruff  # python
                       pkgs.yaml-language-server
-                      pkgs.gopls
                       pkgs.bash-language-server
+                      pkgs.gopls
+                      pkgs.mlsp # markdown
+
 
                       # pkgs.aspell
                       # pkgs.aspellDicts.de
