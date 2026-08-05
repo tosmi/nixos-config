@@ -169,6 +169,7 @@
                       pkgs.uv
                       pkgs.devcontainer
                       pkgs.stern
+                      pkgs.k9s
                       pkgs.awscli2
                       pkgs.opencode
                       pkgs.claude-code

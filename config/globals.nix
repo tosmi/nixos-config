@@ -6,7 +6,6 @@
     "opa"
     "passwdqc"
     "ykman"
-    "block-goose-cli"
   ];
 
   casks = [

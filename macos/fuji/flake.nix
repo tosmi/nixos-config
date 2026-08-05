@@ -17,6 +17,7 @@
         system = "aarch64-darwin";
         pkgs = import inputs.nixpkgs {
           system = "aarch64-darwin";
+          config.allowUnfree = true;
 
           # required until https://github.com/NixOS/nixpkgs/pull/502769
           # gets merged into unstable: https://nixpkgs-tracker.ocfox.me/?pr=502769
@@ -204,12 +205,18 @@
                       pkgs.stern
                       pkgs.k9s
                       pkgs.awscli2
+                      pkgs.awscli2
+                      pkgs.pandoc
+                      pkgs.opencode
+                      pkgs.claude-code
+                      pkgs.claude-agent-acp
 
                       # lsp's
                       pkgs.ruff # python
                       pkgs.yaml-language-server
                       pkgs.bash-language-server
                       pkgs.gopls
+                      pkgs.mpls # markdown
 
                       # https://github.com/nixos/nixpkgs/issues/476684
                       # (pkgs.aspellWithDicts
