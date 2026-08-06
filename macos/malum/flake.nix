@@ -179,7 +179,7 @@
                       pkgs.yaml-language-server
                       pkgs.bash-language-server
                       pkgs.gopls
-                      pkgs.mlsp # markdown
+                      pkgs.mpls # markdown preview ls
 
 
                       # pkgs.aspell
