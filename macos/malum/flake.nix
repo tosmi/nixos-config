@@ -181,12 +181,7 @@
                       pkgs.bash-language-server
                       pkgs.gopls
                       pkgs.mpls # markdown preview ls
-
-
-                      # pkgs.aspell
-                      # pkgs.aspellDicts.de
-                      # pkgs.aspellDicts.en
-                      # pkgs.aspellDicts.en-computers
+                      pkgs.jsonnet-language-server
 
                       # https://github.com/nixos/nixpkgs/issues/476684
                       (pkgs.aspellWithDicts
