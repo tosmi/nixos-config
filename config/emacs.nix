@@ -2,6 +2,7 @@
 {
   programs.emacs = {
     enable = true;
+    package = pkgs.emacs31;
     extraPackages = epkgs: with epkgs; [
       vterm
       pdf-tools
