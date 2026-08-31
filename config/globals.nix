@@ -17,8 +17,10 @@
     "slack"
     "jetbrains-toolbox"
     "font-jetbrains-mono"
-    "cursor"
-    "cursor-cli"
+    # no longer used
+    #
+    # "cursor"
+    # "cursor-cli"
     "microsoft-teams"
     "stats"
     "rectangle"
@@ -44,7 +46,7 @@
     "google-drive"
     "gcloud-cli"
     # slow
-    # "libreoffice"
+    "libreoffice"
     "thaw"
   ];
 
